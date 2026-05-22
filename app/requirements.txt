@@ -6,7 +6,7 @@ Flask-Bcrypt==1.0.1
 Flask-Limiter==3.9.2
 Flask-Mail==0.10.0
 python-dotenv==1.1.0
-psycopg2-binary==2.9.10
+PyMySQL==1.1.1
 SQLAlchemy==2.0.41
 langchain>=0.3.0
 langchain-openai>=0.2.0

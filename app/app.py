@@ -54,7 +54,10 @@ limiter = Limiter(
 )
 
 # ─── Configuration ──────────────────────────────────────────────────────────
-database_url = os.getenv('DATABASE_URL', 'postgresql://postgres:password@localhost:5432/curemynation')
+database_url = os.getenv('DATABASE_URL', 'mysql+pymysql://root:password@localhost:3306/curemynation')
+# Normalise mysql:// → mysql+pymysql://
+if database_url.startswith('mysql://') and not database_url.startswith('mysql+'):
+    database_url = database_url.replace('mysql://', 'mysql+pymysql://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'change-me-in-production')
@@ -77,7 +80,15 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'Cure My Na
 app.config['APP_URL'] = os.getenv('APP_URL', 'http://localhost:5000')
 mail = Mail(app)
 
-if database_url.startswith('postgresql') or database_url.startswith('postgres'):
+if database_url.startswith('mysql'):
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_recycle': 3600,
+        'pool_pre_ping': True,
+        'pool_size': 10,
+        'max_overflow': 20,
+    }
+    print(f'[OK] MySQL configured: {database_url.split("@")[-1]}')
+elif database_url.startswith('postgresql') or database_url.startswith('postgres'):
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         'pool_recycle': 3600,
         'pool_pre_ping': True,
