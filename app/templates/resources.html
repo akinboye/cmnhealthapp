@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Resources — Cure My Nation{% endblock %}
+{% block body %}
+<div class="flex h-screen overflow-hidden">
+  {% include 'partials/sidebar.html' %}
+  <div class="flex-1 lg:ml-64 flex flex-col overflow-auto">
+    <header class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-20 flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="lg:hidden text-gray-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <h1 class="font-bold text-gray-900 text-lg">Health Resources</h1>
+    </header>
+
+    <main class="flex-1 p-6">
+      <!-- Search + filter -->
+      <div class="flex flex-wrap gap-3 mb-6">
+        <input id="search" oninput="applyFilter()" type="text" placeholder="Search articles…" class="input-field flex-1 min-w-48" />
+        <select id="category" onchange="applyFilter()" class="input-field w-48">
+          <option value="">All Categories</option>
+          <option>Patient Rights</option>
+          <option>Health Tips</option>
+          <option>Policy</option>
+          <option>General</option>
+        </select>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading" class="flex justify-center py-16">
+        <div class="w-8 h-8 spinner"></div>
+      </div>
+
+      <!-- Grid -->
+      <div id="blog-grid" class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+      <!-- Empty -->
+      <div id="empty" class="hidden text-center py-16">
+        <p class="text-gray-400">No articles found.</p>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Resources is public — no auth required, but show sidebar if logged in
+const token = localStorage.getItem('cmn_token');
+if (token) App.initSidebar('resources');
+
+let allBlogs = [];
+
+async function loadBlogs() {
+  const res = await fetch('/api/blogs/');
+  document.getElementById('loading').classList.add('hidden');
+  if (!res.ok) { document.getElementById('empty').classList.remove('hidden'); return; }
+  const data = await res.json();
+  allBlogs = data.blogs || [];
+  applyFilter();
+}
+
+function applyFilter() {
+  const search   = document.getElementById('search').value.toLowerCase();
+  const category = document.getElementById('category').value;
+  const filtered = allBlogs.filter(b =>
+    (!search   || b.title.toLowerCase().includes(search) || (b.description||'').toLowerCase().includes(search)) &&
+    (!category || b.category === category)
+  );
+
+  const grid  = document.getElementById('blog-grid');
+  const empty = document.getElementById('empty');
+  if (!filtered.length) {
+    grid.classList.add('hidden');
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  grid.classList.remove('hidden');
+  grid.classList.add('grid');
+
+  grid.innerHTML = filtered.map(b => `
+    <a href="/blog/${b.id}" class="card hover:shadow-md transition cursor-pointer block group p-0 overflow-hidden">
+      ${b.imageBase64
+        ? `<img src="${b.imageBase64}" alt="${App.esc(b.title)}" class="w-full h-44 object-cover" />`
+        : `<div class="w-full h-44 bg-gradient-to-br from-[#1E3A8A] to-[#3B82F6] flex items-center justify-center"><span class="text-white/30 text-6xl font-bold">${App.esc(b.category?.charAt(0)||'H')}</span></div>`}
+      <div class="p-5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-medium text-[#F97316] bg-orange-50 px-2 py-0.5 rounded-full">${App.esc(b.category||'General')}</span>
+          <span class="text-xs text-gray-400">${App.formatDate(b.createdAt)}</span>
+        </div>
+        <h3 class="font-bold text-gray-900 group-hover:text-[#1E3A8A] transition line-clamp-2">${App.esc(b.title)}</h3>
+        <p class="text-sm text-gray-500 mt-1 line-clamp-2">${App.esc(b.description||'')}</p>
+        <div class="text-xs text-gray-400 mt-3">By ${App.esc(b.author||'Admin')}</div>
+      </div>
+    </a>`).join('');
+}
+
+loadBlogs();
+</script>
+{% endblock %}

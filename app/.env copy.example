@@ -1,0 +1,17 @@
+# Cure My Nation Web App - Environment Variables
+
+# PostgreSQL database (replace with your credentials)
+DATABASE_URL=postgresql://postgres:your_password@localhost:5432/curemynation
+
+# JWT Secret (generate with: python -c "import secrets; print(secrets.token_hex(32))")
+JWT_SECRET_KEY=c0b00d79e16b328aedcf142c1f1f36be7adb0d802293372c2b878b9f641c8979
+
+# Flask settings
+FLASK_ENV=development
+SECRET_KEY=change-this-in-production-use-secrets-token-hex-32
+
+# OpenAI API key (for chatbot)
+OPENAI_API_KEY=your-openai-api-key-here
+
+# Server port
+PORT=5000

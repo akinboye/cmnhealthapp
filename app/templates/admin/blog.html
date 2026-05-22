@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block title %}Manage Blog — Admin{% endblock %}
+{% block body %}
+<div class="flex h-screen overflow-hidden">
+  {% include 'partials/sidebar.html' %}
+  <div class="flex-1 lg:ml-64 flex flex-col overflow-auto">
+    <header class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="lg:hidden text-gray-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+        <h1 class="font-bold text-gray-900 text-lg">Manage Blog</h1>
+      </div>
+      <button onclick="openCreate()" class="btn-secondary text-sm py-2 px-4">+ New Article</button>
+    </header>
+
+    <main class="flex-1 p-6">
+      <div id="loading" class="flex justify-center py-16"><div class="w-8 h-8 spinner"></div></div>
+      <div id="content" class="hidden">
+        <div class="card p-0 overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b">
+              <tr>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Title</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Category</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
+                <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="blog-body" class="divide-y divide-gray-50"></tbody>
+          </table>
+          <div id="empty" class="hidden text-center py-12 text-gray-400 text-sm">No articles yet. Create your first one!</div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Create / Edit Modal -->
+<div id="blog-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between px-6 py-4 border-b sticky top-0 bg-white z-10">
+      <h3 id="modal-title" class="font-bold text-gray-900">New Article</h3>
+      <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+    </div>
+    <div class="px-6 py-5 space-y-4">
+      <div id="modal-error" class="hidden bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm"></div>
+      <input id="blog-id" type="hidden" />
+      <div><label class="block text-sm font-medium text-gray-700 mb-1.5">Title *</label><input id="blog-title" type="text" class="input-field" placeholder="Article title" /></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
+          <select id="blog-category" class="input-field">
+            <option value="General">General</option>
+            <option value="Patient Rights">Patient Rights</option>
+            <option value="Health Tips">Health Tips</option>
+            <option value="Policy">Policy</option>
+          </select>
+        </div>
+        <div><label class="block text-sm font-medium text-gray-700 mb-1.5">Author</label><input id="blog-author" type="text" class="input-field" placeholder="Author name" /></div>
+      </div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-1.5">Short Description</label><input id="blog-description" type="text" class="input-field" placeholder="Brief summary shown in cards" /></div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-1.5">Content *</label><textarea id="blog-content" rows="8" class="input-field resize-y" placeholder="Full article content…"></textarea></div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Cover Image (optional)</label>
+        <input id="blog-image-file" type="file" accept="image/*" class="text-sm text-gray-600 file:mr-3 file:btn-outline file:py-1 file:px-3 file:rounded-full file:border file:border-gray-300 file:text-sm" onchange="previewImage(this)" />
+        <img id="image-preview" class="hidden mt-2 max-h-40 rounded-lg object-cover w-full" />
+      </div>
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="blog-published" class="w-4 h-4 text-[#1E3A8A]" />
+        <label for="blog-published" class="text-sm text-gray-700">Publish immediately</label>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeModal()" class="btn-outline flex-1">Cancel</button>
+        <button onclick="saveBlog()" id="save-btn" class="btn-primary flex-1 flex items-center justify-center gap-2">
+          <span id="save-text">Save</span><span id="save-spinner" class="hidden w-4 h-4 spinner"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete -->
+<div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
+    <div class="text-4xl mb-3">🗑️</div>
+    <h3 class="font-bold text-gray-900 mb-2">Delete Article?</h3>
+    <p class="text-sm text-gray-500 mb-5">This action cannot be undone.</p>
+    <div class="flex gap-3">
+      <button onclick="closeDeleteModal()" class="btn-outline flex-1">Cancel</button>
+      <button onclick="confirmDelete()" class="flex-1 bg-red-600 text-white font-semibold py-2.5 px-4 rounded-xl hover:bg-red-700 transition">Delete</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+App.requireAuth(true);
+App.initSidebar('admin_blog');
+
+let allBlogs = [];
+let deleteId = null;
+let imageBase64 = null;
+
+async function loadBlogs() {
+  const res = await App.api('/api/blogs/all');
+  document.getElementById('loading').classList.add('hidden');
+  if (!res.ok) { App.toast('Failed to load blogs', 'error'); return; }
+  const data = await res.json();
+  allBlogs = data.blogs || [];
+  renderBlogs();
+  document.getElementById('content').classList.remove('hidden');
+}
+
+function renderBlogs() {
+  const tbody = document.getElementById('blog-body');
+  const empty = document.getElementById('empty');
+  if (!allBlogs.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  tbody.innerHTML = allBlogs.map(b => `
+    <tr class="hover:bg-gray-50 transition">
+      <td class="px-5 py-4 font-medium text-gray-900 max-w-xs truncate">${App.esc(b.title)}</td>
+      <td class="px-5 py-4 text-gray-600">${App.esc(b.category||'General')}</td>
+      <td class="px-5 py-4">
+        <span class="${b.isPublished ? 'badge-resolved' : 'badge-reported'}">${b.isPublished ? 'Published' : 'Draft'}</span>
+      </td>
+      <td class="px-5 py-4 text-gray-400 text-xs">${App.formatDate(b.createdAt)}</td>
+      <td class="px-5 py-4 text-center">
+        <div class="flex items-center justify-center gap-3">
+          <button onclick="togglePublish('${b.id}',${b.isPublished})" class="text-xs font-semibold ${b.isPublished ? 'text-yellow-600 hover:text-yellow-800' : 'text-green-600 hover:text-green-800'}">${b.isPublished ? 'Unpublish' : 'Publish'}</button>
+          <button onclick="openEdit(${JSON.stringify(b).replace(/"/g,'&quot;')})" class="text-xs text-[#1E3A8A] font-semibold hover:underline">Edit</button>
+          <button onclick="openDelete('${b.id}')" class="text-xs text-red-500 font-semibold hover:underline">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function previewImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    imageBase64 = e.target.result;
+    const img = document.getElementById('image-preview');
+    img.src = imageBase64;
+    img.classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+function openCreate() {
+  imageBase64 = null;
+  document.getElementById('blog-id').value = '';
+  document.getElementById('blog-title').value = '';
+  document.getElementById('blog-category').value = 'General';
+  document.getElementById('blog-author').value = '';
+  document.getElementById('blog-description').value = '';
+  document.getElementById('blog-content').value = '';
+  document.getElementById('blog-published').checked = false;
+  document.getElementById('blog-image-file').value = '';
+  document.getElementById('image-preview').classList.add('hidden');
+  document.getElementById('modal-title').textContent = 'New Article';
+  document.getElementById('modal-error').classList.add('hidden');
+  document.getElementById('blog-modal').classList.remove('hidden');
+}
+
+function openEdit(b) {
+  imageBase64 = b.imageBase64 || null;
+  document.getElementById('blog-id').value = b.id;
+  document.getElementById('blog-title').value = b.title;
+  document.getElementById('blog-category').value = b.category || 'General';
+  document.getElementById('blog-author').value = b.author || '';
+  document.getElementById('blog-description').value = b.description || '';
+  document.getElementById('blog-content').value = b.content;
+  document.getElementById('blog-published').checked = !!b.isPublished;
+  if (b.imageBase64) {
+    const img = document.getElementById('image-preview');
+    img.src = b.imageBase64;
+    img.classList.remove('hidden');
+  } else {
+    document.getElementById('image-preview').classList.add('hidden');
+  }
+  document.getElementById('modal-title').textContent = 'Edit Article';
+  document.getElementById('modal-error').classList.add('hidden');
+  document.getElementById('blog-modal').classList.remove('hidden');
+}
+
+function closeModal() { document.getElementById('blog-modal').classList.add('hidden'); }
+
+async function saveBlog() {
+  const errEl = document.getElementById('modal-error');
+  errEl.classList.add('hidden');
+  const id      = document.getElementById('blog-id').value;
+  const title   = document.getElementById('blog-title').value.trim();
+  const content = document.getElementById('blog-content').value.trim();
+  if (!title || !content) {
+    errEl.textContent = 'Title and content are required.'; errEl.classList.remove('hidden'); return;
+  }
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  document.getElementById('save-spinner').classList.remove('hidden');
+
+  const payload = {
+    title,
+    category:    document.getElementById('blog-category').value,
+    author:      document.getElementById('blog-author').value.trim(),
+    description: document.getElementById('blog-description').value.trim(),
+    content,
+    isPublished: document.getElementById('blog-published').checked,
+    imageBase64: imageBase64 || undefined,
+  };
+
+  try {
+    const method = id ? 'PUT' : 'POST';
+    const url    = id ? `/api/blogs/${id}` : '/api/blogs/';
+    const res = await App.api(url, { method, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.success || data.id) {
+      closeModal();
+      App.toast(id ? 'Article updated!' : 'Article created!', 'success');
+      await loadBlogs();
+    } else {
+      errEl.textContent = data.message || 'Save failed.'; errEl.classList.remove('hidden');
+    }
+  } catch { errEl.textContent = 'Network error.'; errEl.classList.remove('hidden'); }
+  finally {
+    btn.disabled = false;
+    document.getElementById('save-spinner').classList.add('hidden');
+    document.getElementById('save-text').textContent = 'Save';
+  }
+}
+
+async function togglePublish(id, current) {
+  const res = await App.api(`/api/blogs/${id}/publish`, { method: 'PUT' });
+  const data = await res.json();
+  if (data.success) { App.toast(current ? 'Unpublished' : 'Published!', 'success'); loadBlogs(); }
+  else App.toast('Failed', 'error');
+}
+
+function openDelete(id) { deleteId = id; document.getElementById('delete-modal').classList.remove('hidden'); }
+function closeDeleteModal() { document.getElementById('delete-modal').classList.add('hidden'); deleteId = null; }
+
+async function confirmDelete() {
+  if (!deleteId) return;
+  const res = await App.api(`/api/blogs/${deleteId}`, { method: 'DELETE' });
+  const data = await res.json();
+  closeDeleteModal();
+  if (data.success) { App.toast('Article deleted', 'success'); loadBlogs(); }
+  else App.toast('Delete failed', 'error');
+}
+
+loadBlogs();
+</script>
+{% endblock %}

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Cure My Nation{% endblock %}</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary:   { DEFAULT:'#1E3A8A', light:'#3B82F6', dark:'#1E40AF' },
+            secondary: { DEFAULT:'#F97316', light:'#FB923C', dark:'#EA580C' },
+            accent:    '#FFB300',
+          },
+          fontFamily: { sans: ['Inter','ui-sans-serif','system-ui','sans-serif'] },
+        }
+      }
+    }
+  </script>
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style type="text/tailwindcss">
+    [x-cloak]  { display: none !important; }
+    .sidebar-link { @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors; }
+    .sidebar-link:hover { @apply bg-white/10; }
+    .sidebar-link.active { @apply bg-white/20 text-white; }
+    .card { @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6; }
+    .btn-primary { @apply bg-[#1E3A8A] hover:bg-[#1E40AF] text-white font-semibold py-2.5 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed; }
+    .btn-secondary { @apply bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-2.5 px-6 rounded-lg transition-colors; }
+    .btn-outline { @apply border-2 border-[#1E3A8A] text-[#1E3A8A] hover:bg-[#1E3A8A] hover:text-white font-semibold py-2.5 px-6 rounded-lg transition-colors; }
+    .input-field { @apply w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent; }
+    .badge-reported   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800; }
+    .badge-inProgress { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800; }
+    .badge-resolved   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800; }
+    .badge-onhold     { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800; }
+    .badge-low        { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700; }
+    .badge-medium     { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700; }
+    .badge-high       { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700; }
+    .badge-critical   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800; }
+    .spinner { @apply animate-spin rounded-full border-4 border-gray-200 border-t-[#1E3A8A]; }
+  </style>
+
+  {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+{% block body %}{% endblock %}
+
+<!-- Toast notifications -->
+<div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- ── Live Chat Widget (shown to logged-in non-admin users) ── -->
+<div id="livechat-widget" class="hidden">
+  <!-- Floating toggle button -->
+  <button id="lc-toggle" onclick="lcToggle()"
+    class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#1E3A8A] text-white shadow-lg flex items-center justify-center hover:bg-[#1E40AF] transition-colors">
+    <svg id="lc-icon-chat" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+    </svg>
+    <svg id="lc-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+    <span id="lc-unread-badge"
+      class="hidden absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">0</span>
+  </button>
+
+  <!-- Chat panel -->
+  <div id="lc-panel"
+    class="hidden fixed bottom-24 right-3 sm:right-6 z-50 w-[calc(100vw-1.5rem)] sm:w-80 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200"
+    style="height:420px">
+    <!-- Header -->
+    <div class="bg-[#1E3A8A] px-4 py-3 flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-[#F97316] flex items-center justify-center text-white font-bold text-sm">C</div>
+      <div class="flex-1">
+        <div class="text-white text-sm font-semibold">Support Chat</div>
+        <div id="lc-status-dot" class="flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-gray-400" id="lc-dot"></span>
+          <span class="text-blue-200 text-xs" id="lc-status-text">Checking…</span>
+        </div>
+      </div>
+    </div>
+    <!-- Messages -->
+    <div id="lc-messages" class="flex-1 overflow-y-auto px-3 py-3 space-y-2 bg-gray-50">
+      <p class="text-center text-xs text-gray-400 py-6">Send us a message. If we're online we'll reply right away, otherwise we'll get back to you soon.</p>
+    </div>
+    <!-- Input -->
+    <div class="px-3 py-3 border-t border-gray-100 flex gap-2">
+      <input id="lc-input" type="text" placeholder="Type a message…" maxlength="2000"
+        class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();lcSend();}" />
+      <button onclick="lcSend()"
+        class="bg-[#1E3A8A] hover:bg-[#1E40AF] text-white rounded-lg px-3 py-2 text-sm font-semibold transition-colors">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Global JS utilities -->
+<script src="/static/js/app.js"></script>
+{% block scripts %}{% endblock %}
+
+<script>
+// ── Live Chat Widget Logic ──────────────────────────────────────────────────
+(function () {
+  const token = localStorage.getItem('cmn_token');
+  if (!token) return;
+
+  let userData = null;
+  try { userData = JSON.parse(localStorage.getItem('cmn_user') || '{}'); } catch(e) {}
+  if (!userData || userData.isAdmin) return;   // hide for admins
+
+  document.getElementById('livechat-widget').classList.remove('hidden');
+
+  let lcOpen = false;
+  let lastMsgId = 0;
+  let knownIds = new Set();
+  let pollTimer = null;
+  let unreadCount = 0;
+
+  function beep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine'; o.frequency.value = 880;
+      g.gain.setValueAtTime(0.3, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.4);
+    } catch(e) {}
+  }
+
+  function fmtTime(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function appendMsg(m) {
+    if (knownIds.has(m.id)) return false;
+    knownIds.add(m.id);
+    const box = document.getElementById('lc-messages');
+    const isUser = m.sender === 'user';
+    const div = document.createElement('div');
+    div.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+    div.innerHTML = `
+      <div class="max-w-[75%] ${isUser ? 'bg-[#1E3A8A] text-white' : 'bg-white border border-gray-200 text-gray-800'} rounded-2xl px-3 py-2 text-sm shadow-sm">
+        <p class="break-words">${escHtml(m.message)}</p>
+        <p class="text-xs mt-1 opacity-60 text-right">${fmtTime(m.createdAt)}</p>
+      </div>`;
+    box.appendChild(div);
+    return true;
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  async function checkStatus() {
+    try {
+      const r = await fetch('/api/livechat/status');
+      const d = await r.json();
+      const dot = document.getElementById('lc-dot');
+      const txt = document.getElementById('lc-status-text');
+      if (d.online) {
+        dot.className = 'w-2 h-2 rounded-full bg-green-400';
+        txt.textContent = 'Admin online';
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-gray-400';
+        txt.textContent = 'Leave a message';
+      }
+    } catch(e) {}
+  }
+
+  async function pollMessages() {
+    try {
+      const r = await fetch(`/api/livechat/messages?since=${lastMsgId}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!r.ok) return;
+      const d = await r.json();
+      let gotNew = false;
+      (d.messages || []).forEach(m => {
+        if (appendMsg(m)) {
+          if (m.id > lastMsgId) lastMsgId = m.id;
+          if (m.sender === 'admin') {
+            gotNew = true;
+            if (!lcOpen) unreadCount++;
+          }
+        }
+      });
+      if (gotNew) {
+        beep();
+        const box = document.getElementById('lc-messages');
+        box.scrollTop = box.scrollHeight;
+        if (!lcOpen) updateBadge();
+      }
+    } catch(e) {}
+  }
+
+  function updateBadge() {
+    const badge = document.getElementById('lc-unread-badge');
+    if (unreadCount > 0) {
+      badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+
+  window.lcToggle = function () {
+    lcOpen = !lcOpen;
+    document.getElementById('lc-panel').classList.toggle('hidden', !lcOpen);
+    document.getElementById('lc-icon-chat').classList.toggle('hidden', lcOpen);
+    document.getElementById('lc-icon-close').classList.toggle('hidden', !lcOpen);
+    if (lcOpen) {
+      unreadCount = 0;
+      updateBadge();
+      const box = document.getElementById('lc-messages');
+      box.scrollTop = box.scrollHeight;
+      document.getElementById('lc-input').focus();
+    }
+  };
+
+  window.lcSend = async function () {
+    const inp = document.getElementById('lc-input');
+    const text = inp.value.trim();
+    if (!text) return;
+    inp.value = '';
+    inp.disabled = true;
+    try {
+      const r = await fetch('/api/livechat/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ message: text }),
+      });
+      if (r.ok) {
+        const d = await r.json();
+        if (appendMsg(d.message)) {
+          if (d.message.id > lastMsgId) lastMsgId = d.message.id;
+          const box = document.getElementById('lc-messages');
+          box.scrollTop = box.scrollHeight;
+        }
+      }
+    } catch(e) {}
+    inp.disabled = false;
+    inp.focus();
+  };
+
+  // Init
+  checkStatus();
+  pollMessages();
+  pollTimer = setInterval(() => { pollMessages(); checkStatus(); }, 3000);
+})();
+</script>
+
+<script>
+// ── Admin sidebar unread badge ──────────────────────────────────────────────
+(function () {
+  const token = localStorage.getItem('cmn_token');
+  if (!token) return;
+  let userData = null;
+  try { userData = JSON.parse(localStorage.getItem('cmn_user') || '{}'); } catch(e) {}
+  if (!userData || !userData.isAdmin) return;
+
+  async function refreshBadge() {
+    try {
+      const r = await fetch('/api/livechat/admin/unread', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!r.ok) return;
+      const d = await r.json();
+      const badge = document.getElementById('sidebar-chat-badge');
+      if (!badge) return;
+      if (d.unread > 0) {
+        badge.textContent = d.unread > 9 ? '9+' : d.unread;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    } catch(e) {}
+  }
+  refreshBadge();
+  setInterval(refreshBadge, 6000);
+})();
+</script>
+
+</body>
+</html>

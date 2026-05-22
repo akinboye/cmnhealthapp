@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}AI Chatbot — Cure My Nation{% endblock %}
+{% block body %}
+<div class="flex h-screen overflow-hidden">
+  {% include 'partials/sidebar.html' %}
+  <div class="flex-1 lg:ml-64 flex flex-col">
+    <header class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-20 flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="lg:hidden text-gray-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#1E3A8A] to-[#3B82F6] flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        </div>
+        <div>
+          <div class="font-bold text-gray-900">CMN Health Assistant</div>
+          <div class="flex items-center gap-1.5 text-xs text-green-500">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            <span id="status-text">Online</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Chat messages -->
+    <div id="messages" class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
+      <!-- Welcome message -->
+      <div class="flex items-start gap-3">
+        <div class="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center flex-shrink-0 mt-0.5">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        </div>
+        <div class="bg-white rounded-2xl rounded-tl-none px-4 py-3 shadow-sm max-w-xl">
+          <p class="text-sm text-gray-800">Hello! I'm your CMN Health Assistant. I can help you with:</p>
+          <ul class="mt-2 space-y-1 text-sm text-gray-600">
+            <li>• Patient rights and healthcare laws in Nigeria</li>
+            <li>• Information about medical conditions and treatments</li>
+            <li>• How to report healthcare violations</li>
+            <li>• Finding healthcare resources</li>
+          </ul>
+          <p class="mt-2 text-sm text-gray-500 italic">What would you like to know?</p>
+        </div>
+      </div>
+
+      <!-- Suggested questions -->
+      <div id="suggestions" class="flex flex-wrap gap-2 pl-11">
+        <button onclick="sendSuggestion(this)" class="text-xs bg-white border border-gray-200 text-gray-600 px-3 py-1.5 rounded-full hover:border-[#1E3A8A] hover:text-[#1E3A8A] transition">What are my patient rights?</button>
+        <button onclick="sendSuggestion(this)" class="text-xs bg-white border border-gray-200 text-gray-600 px-3 py-1.5 rounded-full hover:border-[#1E3A8A] hover:text-[#1E3A8A] transition">How do I report medical malpractice?</button>
+        <button onclick="sendSuggestion(this)" class="text-xs bg-white border border-gray-200 text-gray-600 px-3 py-1.5 rounded-full hover:border-[#1E3A8A] hover:text-[#1E3A8A] transition">What is NHIS in Nigeria?</button>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="bg-white border-t border-gray-200 p-4">
+      <form id="chat-form" class="flex items-end gap-3">
+        <div class="flex-1 relative">
+          <textarea id="chat-input" rows="1" placeholder="Ask about patient rights, health conditions, violations…"
+            class="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-12 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent max-h-32 overflow-y-auto"></textarea>
+        </div>
+        <button type="submit" id="send-btn" class="w-10 h-10 bg-[#1E3A8A] rounded-full flex items-center justify-center text-white hover:bg-[#1E40AF] transition disabled:opacity-50 flex-shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+        </button>
+      </form>
+      <p class="text-xs text-gray-400 mt-2 text-center">AI responses are informational only — consult a healthcare professional for medical advice.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+App.requireAuth();
+App.initSidebar('chatbot');
+
+const messagesDiv = document.getElementById('messages');
+const chatInput   = document.getElementById('chat-input');
+const sendBtn     = document.getElementById('send-btn');
+
+// Auto-resize textarea
+chatInput.addEventListener('input', () => {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 128) + 'px';
+});
+
+// Submit on Enter (Shift+Enter for newline)
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+document.getElementById('chat-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  sendMessage();
+});
+
+function sendSuggestion(btn) {
+  chatInput.value = btn.textContent;
+  document.getElementById('suggestions').remove();
+  sendMessage();
+}
+
+function addMessage(role, text) {
+  const isUser = role === 'user';
+  const div = document.createElement('div');
+  div.className = `flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`;
+  div.innerHTML = `
+    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isUser ? 'bg-[#F97316]' : 'bg-[#1E3A8A]'}">
+      <span class="text-white text-xs font-bold">${isUser ? 'U' : 'AI'}</span>
+    </div>
+    <div class="max-w-xl px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed ${isUser ? 'bg-[#1E3A8A] text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none'}">
+      ${App.esc(text).replace(/\n/g, '<br>')}
+    </div>`;
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  return div;
+}
+
+function addThinking() {
+  const div = document.createElement('div');
+  div.id = 'thinking';
+  div.className = 'flex items-start gap-3';
+  div.innerHTML = `
+    <div class="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center flex-shrink-0 mt-0.5">
+      <span class="text-white text-xs font-bold">AI</span>
+    </div>
+    <div class="bg-white rounded-2xl rounded-tl-none px-4 py-3 shadow-sm">
+      <div class="flex gap-1 items-center">
+        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay:0ms"></span>
+        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay:150ms"></span>
+        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay:300ms"></span>
+      </div>
+    </div>`;
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+const conversationHistory = [];
+
+async function sendMessage() {
+  const query = chatInput.value.trim();
+  if (!query) return;
+
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  sendBtn.disabled = true;
+
+  addMessage('user', query);
+  conversationHistory.push({ role: 'user', content: query });
+  addThinking();
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('cmn_token')}`,
+      },
+      body: JSON.stringify({ query, history: conversationHistory.slice(0, -1) }),
+    });
+    const data = await res.json();
+    document.getElementById('thinking')?.remove();
+
+    if (res.ok && data.response) {
+      addMessage('ai', data.response);
+      conversationHistory.push({ role: 'ai', content: data.response });
+    } else if (res.status === 503) {
+      addMessage('ai', 'The chatbot is currently unavailable. Please ensure the OpenAI API key is configured and documents are loaded in the backend.');
+    } else {
+      addMessage('ai', data.error || 'Sorry, something went wrong. Please try again.');
+    }
+  } catch(err) {
+    document.getElementById('thinking')?.remove();
+    addMessage('ai', 'Connection error. Please check that the server is running.');
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}My Profile — Cure My Nation{% endblock %}
+{% block body %}
+<div class="flex h-screen overflow-hidden">
+  {% include 'partials/sidebar.html' %}
+  <div class="flex-1 lg:ml-64 flex flex-col overflow-auto">
+    <header class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-20 flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="lg:hidden text-gray-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <h1 class="font-bold text-gray-900 text-lg">My Profile</h1>
+    </header>
+
+    <main class="flex-1 p-6">
+      <div id="loading" class="flex justify-center py-16"><div class="w-8 h-8 spinner"></div></div>
+      <div id="content" class="hidden max-w-2xl mx-auto space-y-6">
+
+        <!-- Avatar card -->
+        <div class="card flex items-center gap-5">
+          <div id="profile-avatar" class="w-16 h-16 rounded-full bg-[#1E3A8A] flex items-center justify-center text-white text-2xl font-bold">?</div>
+          <div>
+            <div id="profile-name" class="font-bold text-gray-900 text-xl"></div>
+            <div id="profile-email" class="text-sm text-gray-500"></div>
+            <div id="profile-role" class="mt-1"></div>
+          </div>
+        </div>
+
+        <!-- Edit profile -->
+        <div class="card">
+          <h2 class="font-bold text-gray-900 mb-4">Edit Profile</h2>
+          <div id="profile-error" class="hidden mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm"></div>
+          <form id="profile-form" class="space-y-4" novalidate>
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="block text-sm font-medium text-gray-700 mb-1.5">First Name</label><input id="firstName" type="text" class="input-field" /></div>
+              <div><label class="block text-sm font-medium text-gray-700 mb-1.5">Last Name</label><input id="lastName" type="text" class="input-field" /></div>
+            </div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label><input id="phone" type="tel" class="input-field" /></div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">State</label>
+              <select id="state" class="input-field">
+                <option value="">Select state</option>
+                <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option>
+                <option>Anambra</option><option>Bauchi</option><option>Bayelsa</option>
+                <option>Benue</option><option>Borno</option><option>Cross River</option>
+                <option>Delta</option><option>Ebonyi</option><option>Edo</option>
+                <option>Ekiti</option><option>Enugu</option><option>FCT (Abuja)</option>
+                <option>Gombe</option><option>Imo</option><option>Jigawa</option>
+                <option>Kaduna</option><option>Kano</option><option>Katsina</option>
+                <option>Kebbi</option><option>Kogi</option><option>Kwara</option>
+                <option>Lagos</option><option>Nasarawa</option><option>Niger</option>
+                <option>Ogun</option><option>Ondo</option><option>Osun</option>
+                <option>Oyo</option><option>Plateau</option><option>Rivers</option>
+                <option>Sokoto</option><option>Taraba</option><option>Yobe</option>
+                <option>Zamfara</option>
+              </select>
+            </div>
+            <div class="flex justify-end">
+              <button type="submit" id="profile-btn" class="btn-primary px-8 flex items-center gap-2">
+                <span>Save Changes</span>
+                <span id="profile-spinner" class="hidden w-4 h-4 spinner"></span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Change password -->
+        <div class="card">
+          <h2 class="font-bold text-gray-900 mb-4">Change Password</h2>
+          <div id="pw-error" class="hidden mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm"></div>
+          <form id="pw-form" class="space-y-4" novalidate>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1.5">Current Password</label><input id="currentPassword" type="password" class="input-field" autocomplete="current-password" /></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1.5">New Password</label><input id="newPassword" type="password" class="input-field" autocomplete="new-password" /></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1.5">Confirm New Password</label><input id="confirmPassword" type="password" class="input-field" autocomplete="new-password" /></div>
+            <div class="flex justify-end">
+              <button type="submit" id="pw-btn" class="btn-secondary px-8 flex items-center gap-2">
+                <span>Update Password</span>
+                <span id="pw-spinner" class="hidden w-4 h-4 spinner"></span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+App.requireAuth();
+App.initSidebar('profile');
+
+async function loadProfile() {
+  const res = await App.api('/api/auth/me');
+  document.getElementById('loading').classList.add('hidden');
+  if (!res.ok) { App.toast('Failed to load profile', 'error'); return; }
+  const { user } = await res.json();
+
+  // Update localStorage with latest
+  localStorage.setItem('cmn_user', JSON.stringify(user));
+
+  const initials = `${user.firstName?.charAt(0)||''}${user.lastName?.charAt(0)||''}`.toUpperCase() || '?';
+  document.getElementById('profile-avatar').textContent = initials;
+  document.getElementById('profile-name').textContent   = `${user.firstName||''} ${user.lastName||''}`.trim();
+  document.getElementById('profile-email').textContent  = user.email;
+  document.getElementById('profile-role').innerHTML     = `<span class="badge-${user.isAdmin ? 'inProgress' : 'reported'}">${user.isAdmin ? 'Administrator' : 'User'}</span>`;
+
+  document.getElementById('firstName').value = user.firstName || '';
+  document.getElementById('lastName').value  = user.lastName  || '';
+  document.getElementById('phone').value     = user.phone     || '';
+
+  const stateEl = document.getElementById('state');
+  for (const opt of stateEl.options) {
+    if (opt.text === user.state) { opt.selected = true; break; }
+  }
+
+  document.getElementById('content').classList.remove('hidden');
+}
+
+document.getElementById('profile-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('profile-error');
+  errEl.classList.add('hidden');
+  const btn = document.getElementById('profile-btn');
+  btn.disabled = true;
+  document.getElementById('profile-spinner').classList.remove('hidden');
+
+  try {
+    const res = await App.api('/api/auth/update-profile', {
+      method: 'PUT',
+      body: JSON.stringify({
+        firstName: document.getElementById('firstName').value.trim(),
+        lastName:  document.getElementById('lastName').value.trim(),
+        phone:     document.getElementById('phone').value.trim(),
+        state:     document.getElementById('state').value,
+      }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (data.user) localStorage.setItem('cmn_user', JSON.stringify(data.user));
+      App.toast('Profile updated successfully!', 'success');
+    } else {
+      errEl.textContent = data.message || 'Update failed.';
+      errEl.classList.remove('hidden');
+    }
+  } catch { errEl.textContent = 'Network error.'; errEl.classList.remove('hidden'); }
+  finally {
+    btn.disabled = false;
+    document.getElementById('profile-spinner').classList.add('hidden');
+  }
+});
+
+document.getElementById('pw-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('pw-error');
+  errEl.classList.add('hidden');
+  const newPw  = document.getElementById('newPassword').value;
+  const confPw = document.getElementById('confirmPassword').value;
+
+  if (newPw !== confPw) { errEl.textContent = 'Passwords do not match.'; errEl.classList.remove('hidden'); return; }
+  if (newPw.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('pw-btn');
+  btn.disabled = true;
+  document.getElementById('pw-spinner').classList.remove('hidden');
+
+  try {
+    const res = await App.api('/api/auth/change-password', {
+      method: 'PUT',
+      body: JSON.stringify({ currentPassword: document.getElementById('currentPassword').value, newPassword: newPw }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('pw-form').reset();
+      App.toast('Password updated!', 'success');
+    } else {
+      errEl.textContent = data.message || 'Password change failed.';
+      errEl.classList.remove('hidden');
+    }
+  } catch { errEl.textContent = 'Network error.'; errEl.classList.remove('hidden'); }
+  finally {
+    btn.disabled = false;
+    document.getElementById('pw-spinner').classList.add('hidden');
+  }
+});
+
+loadProfile();
+</script>
+{% endblock %}

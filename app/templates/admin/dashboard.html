@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — Cure My Nation{% endblock %}
+{% block body %}
+<div class="flex h-screen overflow-hidden">
+  {% include 'partials/sidebar.html' %}
+  <div class="flex-1 lg:ml-64 flex flex-col overflow-auto">
+    <header class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-20 flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="lg:hidden text-gray-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <div>
+        <h1 class="font-bold text-gray-900 text-lg">Admin Dashboard</h1>
+        <p class="text-xs text-gray-400">Platform overview and analytics</p>
+      </div>
+    </header>
+
+    <main class="flex-1 p-6 space-y-6">
+      <div id="loading" class="flex justify-center py-16"><div class="w-8 h-8 spinner"></div></div>
+      <div id="content" class="hidden space-y-6">
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="card"><div class="text-xs font-semibold text-gray-400 uppercase mb-1">Total Violations</div><div class="text-3xl font-extrabold text-[#1E3A8A]" id="stat-total">—</div></div>
+          <div class="card"><div class="text-xs font-semibold text-gray-400 uppercase mb-1">Reported</div><div class="text-3xl font-extrabold text-yellow-500" id="stat-reported">—</div></div>
+          <div class="card"><div class="text-xs font-semibold text-gray-400 uppercase mb-1">In Progress</div><div class="text-3xl font-extrabold text-[#F97316]" id="stat-progress">—</div></div>
+          <div class="card"><div class="text-xs font-semibold text-gray-400 uppercase mb-1">Resolved</div><div class="text-3xl font-extrabold text-green-500" id="stat-resolved">—</div></div>
+        </div>
+
+        <!-- Breakdown + recent -->
+        <div class="grid lg:grid-cols-2 gap-6">
+          <!-- By priority -->
+          <div class="card">
+            <h2 class="font-bold text-gray-900 mb-4">By Priority</h2>
+            <div id="priority-bars" class="space-y-3"></div>
+          </div>
+
+          <!-- Quick links -->
+          <div class="card">
+            <h2 class="font-bold text-gray-900 mb-4">Admin Actions</h2>
+            <div class="space-y-2">
+              <a href="/admin/violations" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 transition">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center"><svg class="w-5 h-5 text-[#1E3A8A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+                <div><div class="text-sm font-medium text-gray-800">Manage Violations</div><div class="text-xs text-gray-400">Review and update status</div></div>
+              </a>
+              <a href="/admin/blog" class="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition">
+                <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center"><svg class="w-5 h-5 text-[#F97316]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></div>
+                <div><div class="text-sm font-medium text-gray-800">Manage Blog</div><div class="text-xs text-gray-400">Create and publish articles</div></div>
+              </a>
+              <a href="/admin/users" class="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 transition">
+                <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center"><svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></div>
+                <div><div class="text-sm font-medium text-gray-800">Manage Users</div><div class="text-xs text-gray-400">View and manage accounts</div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+App.requireAuth(true); // admin-only
+App.initSidebar('admin');
+
+async function loadAdmin() {
+  const res = await App.api('/api/violations/statistics');
+  document.getElementById('loading').classList.add('hidden');
+  if (!res.ok) { App.toast('Failed to load stats', 'error'); return; }
+  const s = (await res.json()).statistics;
+  document.getElementById('stat-total').textContent    = s.total      ?? 0;
+  document.getElementById('stat-reported').textContent  = s.reported   ?? 0;
+  document.getElementById('stat-progress').textContent  = s.inProgress ?? 0;
+  document.getElementById('stat-resolved').textContent  = s.resolved   ?? 0;
+
+  const priorities = [
+    { key:'critical', label:'Critical', color:'bg-red-500',    val: s.byPriority?.critical ?? 0 },
+    { key:'high',     label:'High',     color:'bg-orange-500', val: s.byPriority?.high     ?? 0 },
+    { key:'medium',   label:'Medium',   color:'bg-yellow-500', val: s.byPriority?.medium   ?? 0 },
+    { key:'low',      label:'Low',      color:'bg-green-500',  val: s.byPriority?.low      ?? 0 },
+  ];
+  const total = priorities.reduce((a, p) => a + p.val, 0) || 1;
+  document.getElementById('priority-bars').innerHTML = priorities.map(p => `
+    <div>
+      <div class="flex justify-between text-xs mb-1"><span class="text-gray-600">${p.label}</span><span class="font-bold text-gray-800">${p.val}</span></div>
+      <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div class="${p.color} h-full rounded-full transition-all" style="width:${Math.round(p.val/total*100)}%"></div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('content').classList.remove('hidden');
+}
+
+loadAdmin();
+</script>
+{% endblock %}

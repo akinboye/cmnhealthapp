@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% block title %}Live Chat — Admin{% endblock %}
+{% block body %}
+<div class="flex h-screen overflow-hidden">
+  {% include 'partials/sidebar.html' %}
+
+  <div class="flex-1 lg:ml-64 flex flex-col overflow-hidden">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-3 sticky top-0 z-20">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="toggleSidebar()" class="lg:hidden text-gray-500 mr-1">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <h1 class="font-bold text-gray-900 text-base md:text-lg">Live Chat</h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="admin-status-dot" class="flex items-center gap-1.5 text-xs font-medium">
+            <span id="admin-dot" class="w-2 h-2 rounded-full bg-green-400 shrink-0"></span>
+            <span id="admin-dot-text" class="hidden sm:inline text-green-700">You are online</span>
+          </span>
+          <button onclick="toggleOnline()" id="toggle-online-btn"
+            class="text-xs border border-gray-300 hover:border-gray-400 px-2.5 py-1.5 rounded-lg text-gray-600 transition whitespace-nowrap">
+            Go Offline
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Chat layout -->
+    <div class="flex flex-1 overflow-hidden">
+
+      <!-- Sessions panel (full-width on mobile, fixed w on desktop) -->
+      <div id="sessions-panel" class="flex flex-col w-full md:w-72 md:flex-shrink-0 border-r border-gray-200 bg-white overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-100">
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Conversations</p>
+        </div>
+        <div id="sessions-list" class="flex-1 overflow-y-auto divide-y divide-gray-100">
+          <div class="flex justify-center py-10"><div class="w-6 h-6 spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- Conversation wrapper (hidden on mobile until a conv is selected) -->
+      <div id="conv-wrapper" class="flex-col flex-1 overflow-hidden bg-gray-50" style="display:none">
+        <!-- Empty state (desktop only) -->
+        <div id="conv-empty" class="hidden md:flex flex-1 flex-col items-center justify-center text-gray-400">
+          <svg class="w-16 h-16 mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+          </svg>
+          <p class="font-medium">Select a conversation</p>
+          <p class="text-sm mt-1">Choose a user from the left to start chatting</p>
+        </div>
+
+        <!-- Active conversation -->
+        <div id="conv-panel" class="hidden flex-1 flex-col overflow-hidden">
+          <!-- Conv header -->
+          <div class="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
+            <!-- Back button — mobile only -->
+            <button onclick="goBackToSessions()" class="md:hidden flex items-center gap-1 text-[#1E3A8A] font-semibold text-sm shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              Back
+            </button>
+            <div class="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs shrink-0" id="conv-avatar">?</div>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-gray-900 text-sm truncate" id="conv-name">—</p>
+              <p class="text-xs text-gray-500 truncate" id="conv-email">—</p>
+            </div>
+          </div>
+          <!-- Messages -->
+          <div id="conv-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-2"></div>
+          <!-- Reply input -->
+          <div class="bg-white border-t border-gray-200 px-3 py-3 flex gap-2">
+            <input id="reply-input" type="text" placeholder="Type a reply…" maxlength="2000"
+              class="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply();}" />
+            <button onclick="sendReply()"
+              class="bg-[#1E3A8A] hover:bg-[#1E40AF] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shrink-0">
+              Send
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+App.requireAuth(true);   // admin only
+App.initSidebar('admin_chat');
+
+const TOKEN = localStorage.getItem('cmn_token');
+let isOnline   = true;
+let activeUser = null;   // { userId, userName, userEmail }
+let convLastId = 0;
+let convKnown  = new Set();
+let sessionsTimer = null;
+let convTimer     = null;
+
+// ── Beep ───────────────────────────────────────────────────────────────────
+function beep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'sine'; o.frequency.value = 660;
+    g.gain.setValueAtTime(0.3, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.5);
+  } catch(e) {}
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtTime(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleTimeString('en-NG', { hour:'2-digit', minute:'2-digit' });
+}
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const today = new Date();
+  if (d.toDateString() === today.toDateString()) return 'Today ' + fmtTime(iso);
+  return d.toLocaleDateString('en-NG', { day:'numeric', month:'short' }) + ' ' + fmtTime(iso);
+}
+
+// ── Mobile panel helpers ───────────────────────────────────────────────────
+function isMobile() { return window.innerWidth < 768; }
+
+function showMobileConv() {
+  document.getElementById('sessions-panel').style.display = 'none';
+  document.getElementById('conv-wrapper').style.display = 'flex';
+}
+
+window.goBackToSessions = function () {
+  document.getElementById('sessions-panel').style.display = 'flex';
+  document.getElementById('conv-wrapper').style.display = 'none';
+};
+
+window.addEventListener('resize', () => {
+  const sp = document.getElementById('sessions-panel');
+  const cw = document.getElementById('conv-wrapper');
+  if (window.innerWidth >= 768) {
+    sp.style.display = '';
+    cw.style.display = activeUser ? 'flex' : '';
+    if (activeUser) {
+      document.getElementById('conv-empty').classList.add('hidden');
+    } else {
+      document.getElementById('conv-empty').classList.remove('hidden');
+    }
+  }
+});
+
+// ── On desktop show conv-wrapper immediately ───────────────────────────────
+if (!isMobile()) {
+  document.getElementById('conv-wrapper').style.display = 'flex';
+}
+async function setOnlineStatus(online) {
+  try {
+    await fetch('/api/livechat/admin/online', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+      body: JSON.stringify({ online }),
+    });
+  } catch(e) {}
+  isOnline = online;
+  const dot = document.getElementById('admin-dot');
+  const txt = document.getElementById('admin-dot-text');
+  const btn = document.getElementById('toggle-online-btn');
+  if (online) {
+    dot.className = 'w-2.5 h-2.5 rounded-full bg-green-400';
+    txt.textContent = 'You are online'; txt.className = 'text-green-700';
+    btn.textContent = 'Go Offline';
+  } else {
+    dot.className = 'w-2.5 h-2.5 rounded-full bg-gray-400';
+    txt.textContent = 'You are offline'; txt.className = 'text-gray-500';
+    btn.textContent = 'Go Online';
+  }
+}
+
+window.toggleOnline = function () { setOnlineStatus(!isOnline); };
+
+// ── Load sessions ──────────────────────────────────────────────────────────
+let prevUnreads = {};
+
+async function loadSessions() {
+  try {
+    const r = await fetch('/api/livechat/admin/sessions', {
+      headers: { 'Authorization': 'Bearer ' + TOKEN }
+    });
+    if (!r.ok) return;
+    const d = await r.json();
+    const list = document.getElementById('sessions-list');
+
+    // Check for newly unread sessions (beep)
+    let newMsg = false;
+    (d.sessions || []).forEach(s => {
+      if (s.unread > 0 && (prevUnreads[s.userId] || 0) < s.unread) newMsg = true;
+      prevUnreads[s.userId] = s.unread;
+    });
+    if (newMsg && !(activeUser && document.getElementById('conv-panel').classList.contains('hidden') === false)) {
+      beep();
+    }
+
+    list.innerHTML = (d.sessions || []).length === 0
+      ? '<p class="text-center text-xs text-gray-400 py-10">No conversations yet</p>'
+      : (d.sessions || []).map(s => `
+        <div onclick="openConv('${escHtml(s.userId)}','${escHtml(s.userName)}','${escHtml(s.userEmail)}')"
+          class="px-4 py-3 cursor-pointer hover:bg-blue-50 transition-colors ${activeUser && activeUser.userId===s.userId ? 'bg-blue-50 border-l-4 border-[#1E3A8A]' : ''}">
+          <div class="flex items-center justify-between mb-0.5">
+            <span class="font-semibold text-sm text-gray-900 truncate">${escHtml(s.userName)}</span>
+            <span class="text-xs text-gray-400 ml-2 shrink-0">${fmtDate(s.lastMessageAt)}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <p class="text-xs text-gray-500 truncate max-w-[160px]">${s.lastSender==='admin'?'You: ':''}${escHtml(s.lastMessage)}</p>
+            ${s.unread > 0 ? `<span class="ml-2 shrink-0 w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">${s.unread>9?'9+':s.unread}</span>` : ''}
+          </div>
+        </div>`).join('');
+  } catch(e) {}
+}
+
+// ── Open a conversation ────────────────────────────────────────────────────
+window.openConv = async function (userId, userName, userEmail) {
+  activeUser  = { userId, userName, userEmail };
+  convLastId  = 0;
+  convKnown   = new Set();
+
+  document.getElementById('conv-empty').classList.add('hidden');
+  document.getElementById('conv-panel').classList.remove('hidden');
+  document.getElementById('conv-panel').classList.add('flex');
+
+  // On mobile: switch to conversation view
+  if (isMobile()) {
+    showMobileConv();
+  } else {
+    document.getElementById('conv-wrapper').style.display = 'flex';
+  }
+
+  const initials = userName.split(' ').map(x=>x[0]||'').join('').toUpperCase().slice(0,2);
+  document.getElementById('conv-avatar').textContent = initials;
+  document.getElementById('conv-name').textContent   = userName;
+  document.getElementById('conv-email').textContent  = userEmail;
+  document.getElementById('conv-messages').innerHTML = '<div class="flex justify-center py-6"><div class="w-5 h-5 spinner"></div></div>';
+
+  await pollConv();
+  loadSessions();
+};
+
+// ── Poll active conversation ───────────────────────────────────────────────
+async function pollConv() {
+  if (!activeUser) return;
+  try {
+    const r = await fetch(`/api/livechat/admin/session/${activeUser.userId}?since=${convLastId}`, {
+      headers: { 'Authorization': 'Bearer ' + TOKEN }
+    });
+    if (!r.ok) return;
+    const d = await r.json();
+    const box = document.getElementById('conv-messages');
+    let hasNew = false;
+
+    if (convLastId === 0 && (!d.messages || d.messages.length === 0)) {
+      box.innerHTML = '<p class="text-center text-xs text-gray-400 py-8">No messages yet</p>';
+      return;
+    }
+    if (convLastId === 0) box.innerHTML = '';   // first load
+
+    (d.messages || []).forEach(m => {
+      if (convKnown.has(m.id)) return;
+      convKnown.add(m.id);
+      if (m.id > convLastId) convLastId = m.id;
+      const isAdmin = m.sender === 'admin';
+      const div = document.createElement('div');
+      div.className = `flex ${isAdmin ? 'justify-end' : 'justify-start'}`;
+      div.innerHTML = `
+        <div class="max-w-[72%] ${isAdmin ? 'bg-[#1E3A8A] text-white' : 'bg-white border border-gray-200 text-gray-800'} rounded-2xl px-3 py-2 text-sm shadow-sm">
+          <p class="break-words">${escHtml(m.message)}</p>
+          <p class="text-xs mt-1 opacity-60 text-right">${fmtTime(m.createdAt)}</p>
+        </div>`;
+      box.appendChild(div);
+      hasNew = true;
+    });
+
+    if (hasNew) box.scrollTop = box.scrollHeight;
+  } catch(e) {}
+}
+
+// ── Send reply ─────────────────────────────────────────────────────────────
+window.sendReply = async function () {
+  if (!activeUser) return;
+  const inp = document.getElementById('reply-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = ''; inp.disabled = true;
+  try {
+    const r = await fetch('/api/livechat/admin/reply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+      body: JSON.stringify({ userId: activeUser.userId, message: text }),
+    });
+    if (r.ok) await pollConv();
+  } catch(e) {}
+  inp.disabled = false;
+  inp.focus();
+};
+
+// ── Init ────────────────────────────────────────────────────────────────────
+setOnlineStatus(true);
+loadSessions();
+sessionsTimer = setInterval(loadSessions, 5000);
+convTimer     = setInterval(pollConv, 2000);
+
+// Set offline when page closes
+window.addEventListener('beforeunload', () => {
+  const blob = new Blob([JSON.stringify({ online: false })], { type: 'application/json' });
+  navigator.sendBeacon('/api/livechat/admin/online', blob);
+});
+</script>
+{% endblock %}

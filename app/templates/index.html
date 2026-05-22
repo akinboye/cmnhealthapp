@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+{% block title %}Cure My Nation — Patient Rights & Health{% endblock %}
+
+{% block body %}
+<!-- Public nav -->
+<nav class="bg-[#1E3A8A] text-white shadow-lg sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-[#F97316] flex items-center justify-center font-bold">C</div>
+        <span class="font-bold text-lg">Cure My Nation</span>
+      </div>
+      <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="#pbor" class="text-blue-200 hover:text-white transition">Patient Rights</a>
+        <a href="/blog" class="text-blue-200 hover:text-white transition">Blog</a>
+        <a href="/events" class="text-blue-200 hover:text-white transition">Events</a>
+        <a href="#features" class="text-blue-200 hover:text-white transition">Features</a>
+        <a href="/login" class="text-blue-200 hover:text-white transition">Login</a>
+        <a href="/register" class="bg-[#F97316] hover:bg-[#EA580C] px-4 py-2 rounded-lg transition font-semibold">Get Started</a>
+      </div>
+      <button class="md:hidden text-white" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden pb-4 space-y-2 text-sm">
+      <a href="#pbor" class="block py-2 text-blue-200 hover:text-white">Patient Rights</a>
+      <a href="/blog" class="block py-2 text-blue-200 hover:text-white">Blog</a>
+      <a href="/events" class="block py-2 text-blue-200 hover:text-white">Events</a>
+      <a href="/login" class="block py-2 text-blue-200 hover:text-white">Login</a>
+      <a href="/register" class="block py-2 text-[#F97316] font-semibold">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="bg-gradient-to-br from-[#1E3A8A] via-[#1E40AF] to-[#3B82F6] text-white py-20 px-4">
+  <div class="max-w-7xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 text-sm font-medium mb-6">
+      <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+      Protecting Patient Rights in Nigeria
+    </div>
+    <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
+      Your Health Rights<br /><span class="text-[#FFB300]">Matter</span>
+    </h1>
+    <p class="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-10">
+      Report healthcare violations, access your Patient Bill of Rights, and get AI-powered health guidance — all in one platform.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/register" class="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold py-3.5 px-8 rounded-xl text-lg transition shadow-lg">
+        Get Started Free
+      </a>
+      <a href="/chatbot" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold py-3.5 px-8 rounded-xl text-lg transition">
+        Try AI Chatbot
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="bg-white border-b border-gray-100 py-10">
+  <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+    <div>
+      <div class="text-3xl font-extrabold text-[#1E3A8A]">2,400+</div>
+      <div class="text-sm text-gray-500 mt-1">Reports Filed</div>
+    </div>
+    <div>
+      <div class="text-3xl font-extrabold text-[#F97316]">36</div>
+      <div class="text-sm text-gray-500 mt-1">States Covered</div>
+    </div>
+    <div>
+      <div class="text-3xl font-extrabold text-[#1E3A8A]">90%</div>
+      <div class="text-sm text-gray-500 mt-1">Resolution Rate</div>
+    </div>
+    <div>
+      <div id="stat-users" class="text-3xl font-extrabold text-[#F97316]">…</div>
+      <div class="text-sm text-gray-500 mt-1">Registered Users</div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="py-20 px-4 bg-gray-50">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-14">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Everything you need</h2>
+      <p class="text-gray-500 mt-3 max-w-xl mx-auto">A comprehensive platform for healthcare advocacy, reporting, and education.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition">
+        <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-5">
+          <svg class="w-6 h-6 text-[#1E3A8A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Report Violations</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Securely report medical malpractice, denial of treatment, negligence and other healthcare violations with our structured form.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition">
+        <div class="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center mb-5">
+          <svg class="w-6 h-6 text-[#F97316]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2">AI Health Assistant</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Get instant, accurate health information powered by AI. Ask about patient rights, health conditions, and healthcare services in Nigeria.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition">
+        <div class="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center mb-5">
+          <svg class="w-6 h-6 text-[#FFB300]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Patient Bill of Rights</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Access the complete Patient Bill of Rights, health education articles, and resources to help you navigate the healthcare system.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Patient Bill of Rights -->
+<section id="pbor" class="py-20 px-4 bg-white">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <span class="inline-block bg-blue-50 text-[#1E3A8A] text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">Know Your Rights</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Patient Bill of Rights</h2>
+      <p class="text-gray-500 mt-3 max-w-2xl mx-auto">Every patient in Nigeria is protected by these fundamental rights. Understanding them is the first step to protecting yourself.</p>
+    </div>
+
+    <!-- Language Selector -->
+    <div class="flex flex-wrap items-center justify-center gap-2 mb-10">
+      <span class="text-sm text-gray-500 font-medium mr-1">Translate to:</span>
+      <button onclick="setPBORLang('en')" data-lang="en" class="pbor-lang-btn active px-4 py-1.5 rounded-full text-sm font-semibold border transition">English</button>
+      <button onclick="setPBORLang('yo')" data-lang="yo" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Yoruba</button>
+      <button onclick="setPBORLang('ha')" data-lang="ha" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Hausa</button>
+      <button onclick="setPBORLang('ig')" data-lang="ig" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Igbo</button>
+      <button onclick="setPBORLang('fr')" data-lang="fr" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Français</button>
+      <button onclick="setPBORLang('es')" data-lang="es" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Español</button>
+    </div>
+
+    <!-- Translation notice -->
+    <div id="pbor-translating" class="hidden text-center py-4 mb-4">
+      <div class="inline-flex items-center gap-2 text-sm text-[#1E3A8A] bg-blue-50 px-4 py-2 rounded-full">
+        <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+        Translating…
+      </div>
+    </div>
+
+    <!-- Rights Grid -->
+    <div id="pbor-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+    <p class="text-center text-xs text-gray-400 mt-8">Source: Cure My Nation Initiative — Patients' Bill of Rights (PBOR)</p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="bg-[#1E3A8A] text-white py-16 px-4">
+  <div class="max-w-3xl mx-auto text-center">
+    <h2 class="text-3xl font-bold mb-4">Ready to protect your health rights?</h2>
+    <p class="text-blue-200 mb-8">Join thousands of Nigerians who trust Cure My Nation to advocate for quality healthcare.</p>
+    <a href="/register" class="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold py-3 px-10 rounded-xl text-lg transition inline-block">Create Free Account</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-gray-400 py-10 px-4">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-lg bg-[#F97316] flex items-center justify-center font-bold text-white text-sm">C</div>
+      <span class="font-semibold text-white">Cure My Nation</span>
+    </div>
+    <p class="text-sm">&copy; 2026 Cure My Nation Initiative. All rights reserved.</p>
+    <div class="flex gap-6 text-sm">
+      <a href="/#pbor" class="hover:text-white transition">Patient Rights</a>
+      <a href="/login" class="hover:text-white transition">Login</a>
+      <a href="/register" class="hover:text-white transition">Register</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Redirect already-logged-in users to dashboard
+  const token = localStorage.getItem('cmn_token');
+  if (token) { window.location.href = '/dashboard'; }
+
+  // Load live user count
+  fetch('/api/auth/stats')
+    .then(r => r.json())
+    .then(d => {
+      const el = document.getElementById('stat-users');
+      if (el) el.textContent = (d.userCount || 0).toLocaleString();
+    })
+    .catch(() => {
+      const el = document.getElementById('stat-users');
+      if (el) el.textContent = '0';
+    });
+</script>
+
+<script>
+/* ── Patient Bill of Rights ─────────────────────────────────────────── */
+const RIGHTS = [
+  { n:'1',  title:'Access to Records & Service Information',
+    desc:'You have the right to obtain complete, accurate copies of your medical records and full information about the healthcare services available to you, including their scope and limitations.' },
+  { n:'2',  title:'Information in a Language You Understand',
+    desc:'You have the right to receive all health information — diagnosis, treatment options, procedures, and outcomes — in a language and manner that you clearly understand, including use of interpreters.' },
+  { n:'3',  title:'Transparent Billing',
+    desc:'You have the right to a clear, itemized breakdown of all healthcare costs before and after treatment, with no hidden or unauthorized charges, and full disclosure of billing policies.' },
+  { n:'4',  title:'Privacy & Confidentiality',
+    desc:'Your personal health information and medical records must be kept strictly confidential, stored securely, and only shared with your consent or when required by law.' },
+  { n:'5',  title:'Clean, Safe & Secure Environment',
+    desc:'You have the right to receive care in a healthcare facility that is hygienic, hazard-free, and secure — with proper waste disposal, sterile equipment, and protection from harm or abuse.' },
+  { n:'6',  title:'Respectful Treatment',
+    desc:'Every patient deserves dignified, courteous, and non-discriminatory care regardless of gender, religion, ethnicity, disability, economic status, or any other personal characteristic.' },
+  { n:'7',  title:'Emergency Care',
+    desc:'You have the right to prompt, life-saving emergency treatment without being denied or delayed due to inability to pay, lack of deposit, or any financial or administrative barrier.' },
+  { n:'8',  title:'Right to Decline Care',
+    desc:'You have the right to refuse any medical treatment or procedure after receiving full disclosure of your diagnosis, treatment options, risks, and the consequences of refusal.' },
+  { n:'9',  title:'Consent in Medical Research',
+    desc:'You can freely choose to participate in or decline medical research, clinical trials, or experimental procedures without coercion, and may withdraw at any stage without penalty.' },
+  { n:'10', title:'Quality Healthcare',
+    desc:'You are entitled to safe, competent, and evidence-based care that meets national and international standards, delivered by qualified professionals using proper equipment and protocols.' },
+  { n:'11', title:'Right to Complain',
+    desc:'You have the right to express dissatisfaction about healthcare services and have your complaints investigated and addressed fairly, promptly, and without fear of retaliation or neglect.' },
+];
+
+const COLORS = [
+  'bg-blue-50 text-[#1E3A8A]','bg-orange-50 text-[#F97316]','bg-yellow-50 text-[#FFB300]',
+  'bg-green-50 text-green-600','bg-purple-50 text-purple-600','bg-pink-50 text-pink-600',
+  'bg-indigo-50 text-indigo-600','bg-teal-50 text-teal-600','bg-red-50 text-red-600',
+  'bg-cyan-50 text-cyan-700','bg-lime-50 text-lime-700',
+];
+
+const cache = { en: RIGHTS };
+let currentLang = 'en';
+
+function renderRights(rights) {
+  const grid = document.getElementById('pbor-grid');
+  grid.innerHTML = rights.map((r, i) => {
+    const [bg, fg] = COLORS[i % COLORS.length].split(' ');
+    return `
+      <div class="rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl ${bg} ${fg} flex items-center justify-center font-extrabold text-sm flex-shrink-0">${r.n}</div>
+          <h3 class="font-bold text-gray-900 text-sm leading-snug pbor-title">${r.title}</h3>
+        </div>
+        <p class="text-sm text-gray-500 leading-relaxed pbor-desc">${r.desc}</p>
+      </div>`;
+  }).join('');
+}
+
+async function translateText(text, lang) {
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data[0].map(s => s[0]).join('');
+}
+
+async function setPBORLang(lang) {
+  if (lang === currentLang) return;
+  currentLang = lang;
+
+  // Update button styles
+  document.querySelectorAll('.pbor-lang-btn').forEach(btn => {
+    const active = btn.dataset.lang === lang;
+    btn.classList.toggle('bg-[#1E3A8A]', active);
+    btn.classList.toggle('text-white', active);
+    btn.classList.toggle('border-[#1E3A8A]', active);
+    btn.classList.toggle('text-gray-600', !active);
+    btn.classList.toggle('border-gray-200', !active);
+    btn.classList.toggle('hover:border-[#1E3A8A]', !active);
+    btn.classList.toggle('active', active);
+  });
+
+  if (cache[lang]) { renderRights(cache[lang]); return; }
+
+  document.getElementById('pbor-translating').classList.remove('hidden');
+
+  try {
+    const translated = await Promise.all(RIGHTS.map(async r => ({
+      n: r.n,
+      title: await translateText(r.title, lang),
+      desc:  await translateText(r.desc,  lang),
+    })));
+    cache[lang] = translated;
+    renderRights(translated);
+  } catch(e) {
+    console.error('Translation failed', e);
+    renderRights(RIGHTS); // fallback to English
+  } finally {
+    document.getElementById('pbor-translating').classList.add('hidden');
+  }
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  renderRights(RIGHTS);
+  // Style the default English button
+  const btn = document.querySelector('[data-lang="en"]');
+  if (btn) {
+    btn.classList.add('bg-[#1E3A8A]','text-white','border-[#1E3A8A]');
+    btn.classList.remove('text-gray-600','border-gray-200');
+  }
+});
+</script>
+{% endblock %}
