@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Cure My Nation{% endblock %}</title>
+  <!-- Prevent body margin flash before Tailwind loads -->
+  <style>html,body{margin:0;padding:0}</style>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -49,8 +51,7 @@
 
   {% block head %}{% endblock %}
 </head>
-<body class="bg-gray-50 font-sans antialiased">
-
+<body class="bg-gray-50 font-sans antialiased" style="margin:0;padding:0">
 {% block body %}{% endblock %}
 
 <!-- Toast notifications -->
