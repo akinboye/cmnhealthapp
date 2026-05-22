@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Live Chat — Admin{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Live Chat â€” Admin{% endblock %}
 {% block body %}
 <div class="flex h-screen overflow-hidden">
   {% include 'partials/sidebar.html' %}
@@ -56,22 +56,22 @@
         <div id="conv-panel" class="hidden flex-1 flex-col overflow-hidden">
           <!-- Conv header -->
           <div class="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-            <!-- Back button — mobile only -->
+            <!-- Back button â€” mobile only -->
             <button onclick="goBackToSessions()" class="md:hidden flex items-center gap-1 text-[#1E3A8A] font-semibold text-sm shrink-0">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
               Back
             </button>
             <div class="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs shrink-0" id="conv-avatar">?</div>
             <div class="flex-1 min-w-0">
-              <p class="font-semibold text-gray-900 text-sm truncate" id="conv-name">—</p>
-              <p class="text-xs text-gray-500 truncate" id="conv-email">—</p>
+              <p class="font-semibold text-gray-900 text-sm truncate" id="conv-name">â€”</p>
+              <p class="text-xs text-gray-500 truncate" id="conv-email">â€”</p>
             </div>
           </div>
           <!-- Messages -->
           <div id="conv-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-2"></div>
           <!-- Reply input -->
           <div class="bg-white border-t border-gray-200 px-3 py-3 flex gap-2">
-            <input id="reply-input" type="text" placeholder="Type a reply…" maxlength="2000"
+            <input id="reply-input" type="text" placeholder="Type a replyâ€¦" maxlength="2000"
               class="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]"
               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply();}" />
             <button onclick="sendReply()"
@@ -99,7 +99,7 @@ let convKnown  = new Set();
 let sessionsTimer = null;
 let convTimer     = null;
 
-// ── Beep ───────────────────────────────────────────────────────────────────
+// â”€â”€ Beep â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function beep() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -127,7 +127,7 @@ function fmtDate(iso) {
   return d.toLocaleDateString('en-NG', { day:'numeric', month:'short' }) + ' ' + fmtTime(iso);
 }
 
-// ── Mobile panel helpers ───────────────────────────────────────────────────
+// â”€â”€ Mobile panel helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function isMobile() { return window.innerWidth < 768; }
 
 function showMobileConv() {
@@ -154,13 +154,13 @@ window.addEventListener('resize', () => {
   }
 });
 
-// ── On desktop show conv-wrapper immediately ───────────────────────────────
+// â”€â”€ On desktop show conv-wrapper immediately â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if (!isMobile()) {
   document.getElementById('conv-wrapper').style.display = 'flex';
 }
 async function setOnlineStatus(online) {
   try {
-    await fetch('/api/livechat/admin/online', {
+    await fetch((window.APP_BASE || '') + '/api/livechat/admin/online', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
       body: JSON.stringify({ online }),
@@ -183,12 +183,12 @@ async function setOnlineStatus(online) {
 
 window.toggleOnline = function () { setOnlineStatus(!isOnline); };
 
-// ── Load sessions ──────────────────────────────────────────────────────────
+// â”€â”€ Load sessions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let prevUnreads = {};
 
 async function loadSessions() {
   try {
-    const r = await fetch('/api/livechat/admin/sessions', {
+    const r = await fetch((window.APP_BASE || '') + '/api/livechat/admin/sessions', {
       headers: { 'Authorization': 'Bearer ' + TOKEN }
     });
     if (!r.ok) return;
@@ -222,7 +222,7 @@ async function loadSessions() {
   } catch(e) {}
 }
 
-// ── Open a conversation ────────────────────────────────────────────────────
+// â”€â”€ Open a conversation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 window.openConv = async function (userId, userName, userEmail) {
   activeUser  = { userId, userName, userEmail };
   convLastId  = 0;
@@ -249,11 +249,11 @@ window.openConv = async function (userId, userName, userEmail) {
   loadSessions();
 };
 
-// ── Poll active conversation ───────────────────────────────────────────────
+// â”€â”€ Poll active conversation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function pollConv() {
   if (!activeUser) return;
   try {
-    const r = await fetch(`/api/livechat/admin/session/${activeUser.userId}?since=${convLastId}`, {
+    const r = await fetch(`${window.APP_BASE || ''}/api/livechat/admin/session/${activeUser.userId}?since=${convLastId}`, {
       headers: { 'Authorization': 'Bearer ' + TOKEN }
     });
     if (!r.ok) return;
@@ -287,7 +287,7 @@ async function pollConv() {
   } catch(e) {}
 }
 
-// ── Send reply ─────────────────────────────────────────────────────────────
+// â”€â”€ Send reply â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 window.sendReply = async function () {
   if (!activeUser) return;
   const inp = document.getElementById('reply-input');
@@ -295,7 +295,7 @@ window.sendReply = async function () {
   if (!text) return;
   inp.value = ''; inp.disabled = true;
   try {
-    const r = await fetch('/api/livechat/admin/reply', {
+    const r = await fetch((window.APP_BASE || '') + '/api/livechat/admin/reply', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
       body: JSON.stringify({ userId: activeUser.userId, message: text }),
@@ -306,7 +306,7 @@ window.sendReply = async function () {
   inp.focus();
 };
 
-// ── Init ────────────────────────────────────────────────────────────────────
+// â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 setOnlineStatus(true);
 loadSessions();
 sessionsTimer = setInterval(loadSessions, 5000);

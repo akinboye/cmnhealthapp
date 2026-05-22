@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -56,7 +56,7 @@
 <!-- Toast notifications -->
 <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-<!-- ── Live Chat Widget (shown to logged-in non-admin users) ── -->
+<!-- â”€â”€ Live Chat Widget (shown to logged-in non-admin users) â”€â”€ -->
 <div id="livechat-widget" class="hidden">
   <!-- Floating toggle button -->
   <button id="lc-toggle" onclick="lcToggle()"
@@ -83,7 +83,7 @@
         <div class="text-white text-sm font-semibold">Support Chat</div>
         <div id="lc-status-dot" class="flex items-center gap-1">
           <span class="w-2 h-2 rounded-full bg-gray-400" id="lc-dot"></span>
-          <span class="text-blue-200 text-xs" id="lc-status-text">Checking…</span>
+          <span class="text-blue-200 text-xs" id="lc-status-text">Checkingâ€¦</span>
         </div>
       </div>
     </div>
@@ -93,7 +93,7 @@
     </div>
     <!-- Input -->
     <div class="px-3 py-3 border-t border-gray-100 flex gap-2">
-      <input id="lc-input" type="text" placeholder="Type a message…" maxlength="2000"
+      <input id="lc-input" type="text" placeholder="Type a messageâ€¦" maxlength="2000"
         class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();lcSend();}" />
       <button onclick="lcSend()"
@@ -102,12 +102,14 @@
   </div>
 </div>
 
+<!-- Expose server subdirectory prefix to JavaScript -->
+<script>window.APP_BASE = "{{ APP_BASE }}";</script>
 <!-- Global JS utilities -->
-<script src="/static/js/app.js"></script>
+<script src="{{ APP_BASE }}/static/js/app.js"></script>
 {% block scripts %}{% endblock %}
 
 <script>
-// ── Live Chat Widget Logic ──────────────────────────────────────────────────
+// â”€â”€ Live Chat Widget Logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function () {
   const token = localStorage.getItem('cmn_token');
   if (!token) return;
@@ -165,7 +167,7 @@
 
   async function checkStatus() {
     try {
-      const r = await fetch('/api/livechat/status');
+      const r = await fetch((window.APP_BASE || '') + '/api/livechat/status');
       const d = await r.json();
       const dot = document.getElementById('lc-dot');
       const txt = document.getElementById('lc-status-text');
@@ -181,7 +183,7 @@
 
   async function pollMessages() {
     try {
-      const r = await fetch(`/api/livechat/messages?since=${lastMsgId}`, {
+      const r = await fetch(`${window.APP_BASE || ''}/api/livechat/messages?since=${lastMsgId}`, {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       if (!r.ok) return;
@@ -236,7 +238,7 @@
     inp.value = '';
     inp.disabled = true;
     try {
-      const r = await fetch('/api/livechat/send', {
+      const r = await fetch((window.APP_BASE || '') + '/api/livechat/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
         body: JSON.stringify({ message: text }),
@@ -262,7 +264,7 @@
 </script>
 
 <script>
-// ── Admin sidebar unread badge ──────────────────────────────────────────────
+// â”€â”€ Admin sidebar unread badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function () {
   const token = localStorage.getItem('cmn_token');
   if (!token) return;
@@ -272,7 +274,7 @@
 
   async function refreshBadge() {
     try {
-      const r = await fetch('/api/livechat/admin/unread', {
+      const r = await fetch((window.APP_BASE || '') + '/api/livechat/admin/unread', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       if (!r.ok) return;

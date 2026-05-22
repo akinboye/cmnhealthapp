@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Resources — Cure My Nation{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Resources â€” Cure My Nation{% endblock %}
 {% block body %}
 <div class="flex h-screen overflow-hidden">
   {% include 'partials/sidebar.html' %}
@@ -12,7 +12,7 @@
     <main class="flex-1 p-6">
       <!-- Search + filter -->
       <div class="flex flex-wrap gap-3 mb-6">
-        <input id="search" oninput="applyFilter()" type="text" placeholder="Search articles…" class="input-field flex-1 min-w-48" />
+        <input id="search" oninput="applyFilter()" type="text" placeholder="Search articlesâ€¦" class="input-field flex-1 min-w-48" />
         <select id="category" onchange="applyFilter()" class="input-field w-48">
           <option value="">All Categories</option>
           <option>Patient Rights</option>
@@ -41,14 +41,14 @@
 
 {% block scripts %}
 <script>
-// Resources is public — no auth required, but show sidebar if logged in
+// Resources is public â€” no auth required, but show sidebar if logged in
 const token = localStorage.getItem('cmn_token');
 if (token) App.initSidebar('resources');
 
 let allBlogs = [];
 
 async function loadBlogs() {
-  const res = await fetch('/api/blogs/');
+  const res = await fetch((window.APP_BASE || '') + '/api/blogs/');
   document.getElementById('loading').classList.add('hidden');
   if (!res.ok) { document.getElementById('empty').classList.remove('hidden'); return; }
   const data = await res.json();
@@ -76,7 +76,7 @@ function applyFilter() {
   grid.classList.add('grid');
 
   grid.innerHTML = filtered.map(b => `
-    <a href="/blog/${b.id}" class="card hover:shadow-md transition cursor-pointer block group p-0 overflow-hidden">
+    <a href="${window.APP_BASE || ''}/blog/${b.id}" class="card hover:shadow-md transition cursor-pointer block group p-0 overflow-hidden">
       ${b.imageBase64
         ? `<img src="${b.imageBase64}" alt="${App.esc(b.title)}" class="w-full h-44 object-cover" />`
         : `<div class="w-full h-44 bg-gradient-to-br from-[#1E3A8A] to-[#3B82F6] flex items-center justify-center"><span class="text-white/30 text-6xl font-bold">${App.esc(b.category?.charAt(0)||'H')}</span></div>`}

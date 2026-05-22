@@ -5,26 +5,26 @@
 <nav id="public-nav" class="hidden bg-[#1E3A8A] text-white shadow-lg sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
-      <a href="/" class="flex items-center gap-3">
+      <a href="{{ APP_BASE }}/" class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-lg bg-[#F97316] flex items-center justify-center font-bold">C</div>
         <span class="font-bold text-lg">Cure My Nation</span>
       </a>
       <div class="hidden md:flex items-center gap-6 text-sm font-medium">
-        <a href="/" class="text-blue-200 hover:text-white transition">Home</a>
-        <a href="/blog" class="text-blue-200 hover:text-white transition">Blog</a>
-        <a href="/events" class="text-white font-semibold transition">Events</a>
-        <a href="/login" class="text-blue-200 hover:text-white transition">Login</a>
-        <a href="/register" class="bg-[#F97316] hover:bg-[#EA580C] px-4 py-2 rounded-lg transition font-semibold">Get Started</a>
+        <a href="{{ APP_BASE }}/" class="text-blue-200 hover:text-white transition">Home</a>
+        <a href="{{ APP_BASE }}/blog" class="text-blue-200 hover:text-white transition">Blog</a>
+        <a href="{{ APP_BASE }}/events" class="text-white font-semibold transition">Events</a>
+        <a href="{{ APP_BASE }}/login" class="text-blue-200 hover:text-white transition">Login</a>
+        <a href="{{ APP_BASE }}/register" class="bg-[#F97316] hover:bg-[#EA580C] px-4 py-2 rounded-lg transition font-semibold">Get Started</a>
       </div>
       <button class="md:hidden text-white" onclick="document.getElementById('ev-mobile-menu').classList.toggle('hidden')">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
     </div>
     <div id="ev-mobile-menu" class="hidden pb-4 space-y-2 text-sm">
-      <a href="/" class="block py-2 text-blue-200 hover:text-white">Home</a>
-      <a href="/blog" class="block py-2 text-blue-200 hover:text-white">Blog</a>
-      <a href="/login" class="block py-2 text-blue-200 hover:text-white">Login</a>
-      <a href="/register" class="block py-2 text-[#F97316] font-semibold">Get Started</a>
+      <a href="{{ APP_BASE }}/" class="block py-2 text-blue-200 hover:text-white">Home</a>
+      <a href="{{ APP_BASE }}/blog" class="block py-2 text-blue-200 hover:text-white">Blog</a>
+      <a href="{{ APP_BASE }}/login" class="block py-2 text-blue-200 hover:text-white">Login</a>
+      <a href="{{ APP_BASE }}/register" class="block py-2 text-[#F97316] font-semibold">Get Started</a>
     </div>
   </div>
 </nav>
@@ -101,7 +101,7 @@ let allEvents = [];
 
 async function loadEvents() {
   try {
-    const res = await fetch('/api/events/');
+    const res = await fetch((window.APP_BASE || '') + '/api/events/');
     document.getElementById('loading').classList.add('hidden');
     if (!res.ok) { document.getElementById('empty').classList.remove('hidden'); return; }
     const data = await res.json();

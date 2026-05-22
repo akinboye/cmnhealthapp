@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Article — Cure My Nation{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Article â€” Cure My Nation{% endblock %}
 {% block body %}
 <!-- Show sidebar if logged in -->
 <div class="flex h-screen overflow-hidden">
@@ -7,13 +7,13 @@
   <div class="flex-1 flex flex-col overflow-auto" id="main-wrapper">
     <!-- Public topbar (shown when not logged in) -->
     <nav id="public-nav" class="bg-[#1E3A8A] text-white px-6 py-4 flex items-center justify-between sticky top-0 z-20">
-      <a href="/" class="flex items-center gap-2 font-bold">
+      <a href="{{ APP_BASE }}/" class="flex items-center gap-2 font-bold">
         <div class="w-7 h-7 rounded bg-[#F97316] flex items-center justify-center font-bold">C</div>
         Cure My Nation
       </a>
       <div class="flex gap-4 text-sm">
-        <a href="/resources" class="text-blue-200 hover:text-white">← All Articles</a>
-        <a href="/login" class="font-semibold">Login</a>
+        <a href="{{ APP_BASE }}/resources" class="text-blue-200 hover:text-white">â† All Articles</a>
+        <a href="{{ APP_BASE }}/login" class="font-semibold">Login</a>
       </div>
     </nav>
 
@@ -21,7 +21,7 @@
       <div id="loading" class="flex justify-center py-16"><div class="w-8 h-8 spinner"></div></div>
       <div id="content" class="hidden max-w-3xl mx-auto">
         <div class="mb-4">
-          <a href="/resources" class="text-sm text-[#1E3A8A] hover:underline">← Back to Resources</a>
+          <a href="{{ APP_BASE }}/resources" class="text-sm text-[#1E3A8A] hover:underline">â† Back to Resources</a>
         </div>
         <div class="card p-0 overflow-hidden">
           <div id="blog-image"></div>
@@ -42,7 +42,7 @@
       </div>
       <div id="not-found" class="hidden text-center py-16">
         <p class="text-gray-400 mb-4">Article not found.</p>
-        <a href="/resources" class="text-[#1E3A8A] hover:underline">← Back to Resources</a>
+        <a href="{{ APP_BASE }}/resources" class="text-[#1E3A8A] hover:underline">â† Back to Resources</a>
       </div>
     </main>
   </div>
@@ -54,7 +54,7 @@
 const blogId = '{{ blog_id }}';
 
 async function loadBlog() {
-  const res = await fetch(`/api/blogs/${blogId}`);
+  const res = await fetch(`${window.APP_BASE || ''}/api/blogs/${blogId}`);
   document.getElementById('loading').classList.add('hidden');
   if (!res.ok) { document.getElementById('not-found').classList.remove('hidden'); return; }
   const { blog } = await res.json();
@@ -68,7 +68,7 @@ async function loadBlog() {
   document.getElementById('blog-description').textContent= blog.description || '';
   document.getElementById('blog-author').textContent     = blog.author || 'Admin';
   document.getElementById('author-avatar').textContent   = (blog.author||'A').charAt(0).toUpperCase();
-  // Render content as plain text (newlines → paragraphs)
+  // Render content as plain text (newlines â†’ paragraphs)
   document.getElementById('blog-content').innerHTML = blog.content.split('\n\n').map(p => `<p>${App.esc(p)}</p>`).join('');
 
   document.getElementById('content').classList.remove('hidden');
@@ -80,7 +80,7 @@ if (token) {
   document.getElementById('public-nav').classList.add('hidden');
   document.getElementById('main-wrapper').classList.add('lg:ml-64');
   // Dynamically load sidebar
-  fetch('/resources').then(r => r.text()).then(html => {
+  fetch((window.APP_BASE || '') + '/resources').then(r => r.text()).then(html => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     const sidebar = doc.getElementById('sidebar');

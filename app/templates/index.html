@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Cure My Nation — Patient Rights & Health{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Cure My Nation â€” Patient Rights & Health{% endblock %}
 
 {% block body %}
 <!-- Public nav -->
@@ -12,11 +12,11 @@
       </div>
       <div class="hidden md:flex items-center gap-6 text-sm font-medium">
         <a href="#pbor" class="text-blue-200 hover:text-white transition">Patient Rights</a>
-        <a href="/blog" class="text-blue-200 hover:text-white transition">Blog</a>
-        <a href="/events" class="text-blue-200 hover:text-white transition">Events</a>
+        <a href="{{ APP_BASE }}/blog" class="text-blue-200 hover:text-white transition">Blog</a>
+        <a href="{{ APP_BASE }}/events" class="text-blue-200 hover:text-white transition">Events</a>
         <a href="#features" class="text-blue-200 hover:text-white transition">Features</a>
-        <a href="/login" class="text-blue-200 hover:text-white transition">Login</a>
-        <a href="/register" class="bg-[#F97316] hover:bg-[#EA580C] px-4 py-2 rounded-lg transition font-semibold">Get Started</a>
+        <a href="{{ APP_BASE }}/login" class="text-blue-200 hover:text-white transition">Login</a>
+        <a href="{{ APP_BASE }}/register" class="bg-[#F97316] hover:bg-[#EA580C] px-4 py-2 rounded-lg transition font-semibold">Get Started</a>
       </div>
       <button class="md:hidden text-white" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -24,10 +24,10 @@
     </div>
     <div id="mobile-menu" class="hidden pb-4 space-y-2 text-sm">
       <a href="#pbor" class="block py-2 text-blue-200 hover:text-white">Patient Rights</a>
-      <a href="/blog" class="block py-2 text-blue-200 hover:text-white">Blog</a>
-      <a href="/events" class="block py-2 text-blue-200 hover:text-white">Events</a>
-      <a href="/login" class="block py-2 text-blue-200 hover:text-white">Login</a>
-      <a href="/register" class="block py-2 text-[#F97316] font-semibold">Get Started</a>
+      <a href="{{ APP_BASE }}/blog" class="block py-2 text-blue-200 hover:text-white">Blog</a>
+      <a href="{{ APP_BASE }}/events" class="block py-2 text-blue-200 hover:text-white">Events</a>
+      <a href="{{ APP_BASE }}/login" class="block py-2 text-blue-200 hover:text-white">Login</a>
+      <a href="{{ APP_BASE }}/register" class="block py-2 text-[#F97316] font-semibold">Get Started</a>
     </div>
   </div>
 </nav>
@@ -43,13 +43,13 @@
       Your Health Rights<br /><span class="text-[#FFB300]">Matter</span>
     </h1>
     <p class="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-10">
-      Report healthcare violations, access your Patient Bill of Rights, and get AI-powered health guidance — all in one platform.
+      Report healthcare violations, access your Patient Bill of Rights, and get AI-powered health guidance â€” all in one platform.
     </p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <a href="/register" class="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold py-3.5 px-8 rounded-xl text-lg transition shadow-lg">
+      <a href="{{ APP_BASE }}/register" class="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold py-3.5 px-8 rounded-xl text-lg transition shadow-lg">
         Get Started Free
       </a>
-      <a href="/chatbot" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold py-3.5 px-8 rounded-xl text-lg transition">
+      <a href="{{ APP_BASE }}/chatbot" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold py-3.5 px-8 rounded-xl text-lg transition">
         Try AI Chatbot
       </a>
     </div>
@@ -72,7 +72,7 @@
       <div class="text-sm text-gray-500 mt-1">Resolution Rate</div>
     </div>
     <div>
-      <div id="stat-users" class="text-3xl font-extrabold text-[#F97316]">…</div>
+      <div id="stat-users" class="text-3xl font-extrabold text-[#F97316]">â€¦</div>
       <div class="text-sm text-gray-500 mt-1">Registered Users</div>
     </div>
   </div>
@@ -128,22 +128,22 @@
       <button onclick="setPBORLang('yo')" data-lang="yo" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Yoruba</button>
       <button onclick="setPBORLang('ha')" data-lang="ha" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Hausa</button>
       <button onclick="setPBORLang('ig')" data-lang="ig" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Igbo</button>
-      <button onclick="setPBORLang('fr')" data-lang="fr" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Français</button>
-      <button onclick="setPBORLang('es')" data-lang="es" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Español</button>
+      <button onclick="setPBORLang('fr')" data-lang="fr" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">FranÃ§ais</button>
+      <button onclick="setPBORLang('es')" data-lang="es" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">EspaÃ±ol</button>
     </div>
 
     <!-- Translation notice -->
     <div id="pbor-translating" class="hidden text-center py-4 mb-4">
       <div class="inline-flex items-center gap-2 text-sm text-[#1E3A8A] bg-blue-50 px-4 py-2 rounded-full">
         <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-        Translating…
+        Translatingâ€¦
       </div>
     </div>
 
     <!-- Rights Grid -->
     <div id="pbor-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
-    <p class="text-center text-xs text-gray-400 mt-8">Source: Cure My Nation Initiative — Patients' Bill of Rights (PBOR)</p>
+    <p class="text-center text-xs text-gray-400 mt-8">Source: Cure My Nation Initiative â€” Patients' Bill of Rights (PBOR)</p>
   </div>
 </section>
 
@@ -152,7 +152,7 @@
   <div class="max-w-3xl mx-auto text-center">
     <h2 class="text-3xl font-bold mb-4">Ready to protect your health rights?</h2>
     <p class="text-blue-200 mb-8">Join thousands of Nigerians who trust Cure My Nation to advocate for quality healthcare.</p>
-    <a href="/register" class="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold py-3 px-10 rounded-xl text-lg transition inline-block">Create Free Account</a>
+    <a href="{{ APP_BASE }}/register" class="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold py-3 px-10 rounded-xl text-lg transition inline-block">Create Free Account</a>
   </div>
 </section>
 
@@ -166,8 +166,8 @@
     <p class="text-sm">&copy; 2026 Cure My Nation Initiative. All rights reserved.</p>
     <div class="flex gap-6 text-sm">
       <a href="/#pbor" class="hover:text-white transition">Patient Rights</a>
-      <a href="/login" class="hover:text-white transition">Login</a>
-      <a href="/register" class="hover:text-white transition">Register</a>
+      <a href="{{ APP_BASE }}/login" class="hover:text-white transition">Login</a>
+      <a href="{{ APP_BASE }}/register" class="hover:text-white transition">Register</a>
     </div>
   </div>
 </footer>
@@ -175,10 +175,10 @@
 <script>
   // Redirect already-logged-in users to dashboard
   const token = localStorage.getItem('cmn_token');
-  if (token) { window.location.href = '/dashboard'; }
+  if (token) { window.location.href = (window.APP_BASE || '') + '/dashboard'; }
 
   // Load live user count
-  fetch('/api/auth/stats')
+  fetch((window.APP_BASE || '') + '/api/auth/stats')
     .then(r => r.json())
     .then(d => {
       const el = document.getElementById('stat-users');
@@ -191,18 +191,18 @@
 </script>
 
 <script>
-/* ── Patient Bill of Rights ─────────────────────────────────────────── */
+/* â”€â”€ Patient Bill of Rights â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const RIGHTS = [
   { n:'1',  title:'Access to Records & Service Information',
     desc:'You have the right to obtain complete, accurate copies of your medical records and full information about the healthcare services available to you, including their scope and limitations.' },
   { n:'2',  title:'Information in a Language You Understand',
-    desc:'You have the right to receive all health information — diagnosis, treatment options, procedures, and outcomes — in a language and manner that you clearly understand, including use of interpreters.' },
+    desc:'You have the right to receive all health information â€” diagnosis, treatment options, procedures, and outcomes â€” in a language and manner that you clearly understand, including use of interpreters.' },
   { n:'3',  title:'Transparent Billing',
     desc:'You have the right to a clear, itemized breakdown of all healthcare costs before and after treatment, with no hidden or unauthorized charges, and full disclosure of billing policies.' },
   { n:'4',  title:'Privacy & Confidentiality',
     desc:'Your personal health information and medical records must be kept strictly confidential, stored securely, and only shared with your consent or when required by law.' },
   { n:'5',  title:'Clean, Safe & Secure Environment',
-    desc:'You have the right to receive care in a healthcare facility that is hygienic, hazard-free, and secure — with proper waste disposal, sterile equipment, and protection from harm or abuse.' },
+    desc:'You have the right to receive care in a healthcare facility that is hygienic, hazard-free, and secure â€” with proper waste disposal, sterile equipment, and protection from harm or abuse.' },
   { n:'6',  title:'Respectful Treatment',
     desc:'Every patient deserves dignified, courteous, and non-discriminatory care regardless of gender, religion, ethnicity, disability, economic status, or any other personal characteristic.' },
   { n:'7',  title:'Emergency Care',

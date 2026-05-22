@@ -102,6 +102,13 @@ else:
 db.init_app(app)
 jwt = JWTManager(app)
 
+# ─── Template globals ────────────────────────────────────────────────────────
+@app.context_processor
+def inject_app_base():
+    # request.script_root is set automatically by Passenger (SCRIPT_NAME)
+    # or by ProxyFix (X-Forwarded-Prefix). Empty string on plain localhost.
+    return dict(APP_BASE=request.script_root)
+
 # ─── Security headers ───────────────────────────────────────────────────────
 @app.after_request
 def set_security_headers(response):

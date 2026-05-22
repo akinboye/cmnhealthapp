@@ -17,7 +17,7 @@
           <p class="text-xs text-gray-400">Welcome back, <span id="topbar-name" class="font-medium text-[#1E3A8A]">…</span></p>
         </div>
       </div>
-      <a href="/violations/new" class="btn-secondary text-sm py-2 px-4">+ Report Violation</a>
+      <a href="{{ APP_BASE }}/violations/new" class="btn-secondary text-sm py-2 px-4">+ Report Violation</a>
     </header>
 
     <!-- Page body -->
@@ -56,19 +56,19 @@
           <div class="card">
             <h2 class="font-bold text-gray-900 mb-4">Quick Actions</h2>
             <div class="space-y-2">
-              <a href="/violations/new" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 transition group">
+              <a href="{{ APP_BASE }}/violations/new" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 transition group">
                 <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
                   <svg class="w-5 h-5 text-[#1E3A8A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 </div>
                 <div><div class="text-sm font-medium text-gray-800">Report Violation</div><div class="text-xs text-gray-400">File a new healthcare complaint</div></div>
               </a>
-              <a href="/chatbot" class="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition group">
+              <a href="{{ APP_BASE }}/chatbot" class="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition group">
                 <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
                   <svg class="w-5 h-5 text-[#F97316]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                 </div>
                 <div><div class="text-sm font-medium text-gray-800">Ask AI Chatbot</div><div class="text-xs text-gray-400">Get instant health guidance</div></div>
               </a>
-              <a href="/resources" class="flex items-center gap-3 p-3 rounded-lg hover:bg-yellow-50 transition group">
+              <a href="{{ APP_BASE }}/resources" class="flex items-center gap-3 p-3 rounded-lg hover:bg-yellow-50 transition group">
                 <div class="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
                   <svg class="w-5 h-5 text-[#FFB300]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253"/></svg>
                 </div>
@@ -81,7 +81,7 @@
           <div class="card lg:col-span-2">
             <div class="flex items-center justify-between mb-4">
               <h2 class="font-bold text-gray-900">Recent Violations</h2>
-              <a href="/violations" class="text-sm text-[#1E3A8A] hover:underline font-medium">View all</a>
+              <a href="{{ APP_BASE }}/violations" class="text-sm text-[#1E3A8A] hover:underline font-medium">View all</a>
             </div>
             <div id="recent-violations">
               <div class="text-sm text-gray-400 text-center py-8">Loading violations…</div>
@@ -124,7 +124,7 @@ async function loadDashboard() {
       const recent = (v.violations || []).slice(0, 5);
       const container = document.getElementById('recent-violations');
       if (!recent.length) {
-        container.innerHTML = '<div class="text-sm text-gray-400 text-center py-8">No violations reported yet.<br/><a href="/violations/new" class="text-[#1E3A8A] font-semibold hover:underline mt-2 inline-block">File your first report →</a></div>';
+        container.innerHTML = '<div class="text-sm text-gray-400 text-center py-8">No violations reported yet.<br/><a href="{{ APP_BASE }}/violations/new" class="text-[#1E3A8A] font-semibold hover:underline mt-2 inline-block">File your first report →</a></div>';
       } else {
         container.innerHTML = recent.map(v => `
           <div class="flex items-start justify-between py-3 border-b border-gray-50 last:border-0">

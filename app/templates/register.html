@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Create Account — Cure My Nation{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Create Account â€” Cure My Nation{% endblock %}
 {% block body %}
 <div class="min-h-screen bg-gradient-to-br from-[#1E3A8A] via-[#1E40AF] to-[#3B82F6] flex items-center justify-center p-4">
   <div class="w-full max-w-lg">
@@ -68,7 +68,7 @@
 
         <p class="text-center text-sm text-gray-500 mt-6">
           Already have an account?
-          <a href="/login" class="text-[#1E3A8A] font-semibold hover:underline">Sign in</a>
+          <a href="{{ APP_BASE }}/login" class="text-[#1E3A8A] font-semibold hover:underline">Sign in</a>
         </p>
       </div>
     </div>
@@ -107,11 +107,11 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
 
   const btn = document.getElementById('register-btn');
   btn.disabled = true;
-  document.getElementById('btn-text').textContent = 'Creating account…';
+  document.getElementById('btn-text').textContent = 'Creating accountâ€¦';
   document.getElementById('btn-spinner').classList.remove('hidden');
 
   try {
-    const res = await fetch('/api/auth/register', {
+    const res = await fetch((window.APP_BASE || '') + '/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ firstName, lastName, email, phone, state, password }),
@@ -120,13 +120,13 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     if (data.success) {
       localStorage.setItem('cmn_token', data.token);
       localStorage.setItem('cmn_user', JSON.stringify(data.user));
-      window.location.href = '/dashboard';
+      window.location.href = (window.APP_BASE || '') + '/dashboard';
     } else {
       errBanner.textContent = data.message || 'Registration failed.';
       errBanner.classList.remove('hidden');
     }
   } catch (err) {
-    errBanner.textContent = 'Network error — is the server running?';
+    errBanner.textContent = 'Network error â€” is the server running?';
     errBanner.classList.remove('hidden');
   } finally {
     btn.disabled = false;
@@ -135,6 +135,6 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
   }
 });
 
-if (localStorage.getItem('cmn_token')) window.location.href = '/dashboard';
+if (localStorage.getItem('cmn_token')) window.location.href = (window.APP_BASE || '') + '/dashboard';
 </script>
 {% endblock %}

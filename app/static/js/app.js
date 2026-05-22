@@ -20,13 +20,13 @@ const App = (() => {
    */
   function requireAuth(adminOnly = false) {
     if (!getToken()) {
-      window.location.href = '/login';
+      window.location.href = (window.APP_BASE || '') + '/login';
       return;
     }
     if (adminOnly) {
       const user = getUser();
       if (!user.isAdmin) {
-        window.location.href = '/dashboard';
+        window.location.href = (window.APP_BASE || '') + '/dashboard';
       }
     }
   }
@@ -34,7 +34,7 @@ const App = (() => {
   function logout() {
     localStorage.removeItem('cmn_token');
     localStorage.removeItem('cmn_user');
-    window.location.href = '/login';
+    window.location.href = (window.APP_BASE || '') + '/login';
   }
 
   // ─── API fetch wrapper ────────────────────────────────────────────────────
@@ -46,13 +46,16 @@ const App = (() => {
   function api(url, options = {}) {
     const token = getToken();
     const headers = { ...(options.headers || {}) };
+    // Prepend the server subdirectory prefix (e.g. /healthapp) when present
+    const base = window.APP_BASE || '';
+    const fullUrl = url.startsWith('/') ? base + url : url;
 
     if (token) headers['Authorization'] = `Bearer ${token}`;
     if (options.body && !headers['Content-Type']) {
       headers['Content-Type'] = 'application/json';
     }
 
-    return fetch(url, { ...options, headers });
+    return fetch(fullUrl, { ...options, headers });
   }
 
   // ─── Sidebar ───────────────────────────────────────────────────────────────
