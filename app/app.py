@@ -127,7 +127,7 @@ def set_security_headers(response):
         "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com; "
         "img-src 'self' data: https:; "
-        "connect-src 'self'; "
+        "connect-src 'self' https://translate.googleapis.com; "
         "frame-ancestors 'none';"
     )
     return response
