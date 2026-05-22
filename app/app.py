@@ -9,6 +9,7 @@ from flask_jwt_extended import JWTManager, verify_jwt_in_request, get_jwt_identi
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_mail import Mail
+from werkzeug.middleware.proxy_fix import ProxyFix
 from pathlib import Path
 import os
 import json
@@ -37,6 +38,9 @@ from live_chat import live_chat_bp
 BASE_DIR = Path(__file__).parent
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
+# Handle reverse-proxy subdirectory (e.g. /healthapp on cPanel)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 # Restrict CORS to configured origins (default: localhost only)
 _allowed_origins = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5000,http://127.0.0.1:5000').split(',')
 CORS(app, resources={r"/api/*": {"origins": _allowed_origins}}, supports_credentials=True)
@@ -54,7 +58,7 @@ database_url = os.getenv('DATABASE_URL', 'postgresql://postgres:password@localho
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'change-me-in-production')
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'jwt-change-me-in-production')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY') or os.getenv('SECRET_KEY', 'jwt-change-me-in-production')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=30)
 # Allow JWT from Authorization header OR cookie named 'access_token'
 app.config['JWT_TOKEN_LOCATION'] = ['headers', 'cookies']
