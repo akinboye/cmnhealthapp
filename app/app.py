@@ -472,6 +472,18 @@ def init_app():
         print('[ERROR] OPENAI_API_KEY not set — chatbot disabled')
 
 
+# Initialize on module load (for Passenger WSGI) and on __main__ (for local dev)
+with app.app_context():
+    init_db(app)
+    seed_default_users()
+    api_key = os.getenv('OPENAI_API_KEY')
+    if api_key:
+        print(f'[INFO] Module load: Initializing chatbot...')
+        init_vector_store()
+    else:
+        print('[ERROR] OPENAI_API_KEY not set — chatbot disabled')
+
+
 if __name__ == '__main__':
     init_app()
     port = int(os.getenv('PORT', 5000))
