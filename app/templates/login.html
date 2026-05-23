@@ -82,7 +82,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     if (data.success) {
       localStorage.setItem('cmn_token', data.token);
       localStorage.setItem('cmn_user', JSON.stringify(data.user));
-      window.location.href = data.user.isAdmin ? '/admin' : '/dashboard';
+      window.location.href = (window.APP_BASE || '') + (data.user.isAdmin ? '/admin' : '/dashboard');
     } else {
       errBanner.textContent = data.message || 'Login failed. Please try again.';
       errBanner.classList.remove('hidden');
