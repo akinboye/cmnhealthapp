@@ -172,20 +172,24 @@ Answer:""",
 )
 
 try:
-    if os.getenv('OPENAI_API_KEY'):
+    api_key = os.getenv('OPENAI_API_KEY')
+    if api_key:
+        print(f'[DEBUG] Initializing OpenAI with key: {api_key[:20]}...')
         embeddings = OpenAIEmbeddings(
-            openai_api_key=os.getenv('OPENAI_API_KEY'),
+            openai_api_key=api_key,
             model='text-embedding-3-small',
         )
         llm = ChatOpenAI(
-            openai_api_key=os.getenv('OPENAI_API_KEY'),
+            openai_api_key=api_key,
             model_name='gpt-3.5-turbo',
             temperature=0.7,
             max_tokens=1024,
         )
-        print('[OK] OpenAI initialized')
+        print('[OK] OpenAI initialized successfully')
+    else:
+        print('[WARN] OPENAI_API_KEY not found in environment')
 except Exception as e:
-    print(f'[WARN] OpenAI init failed: {e}')
+    print(f'[ERROR] OpenAI init failed: {type(e).__name__}: {e}')
 
 
 def load_documents():
@@ -203,18 +207,24 @@ def load_documents():
 
 def init_vector_store():
     global qa_retriever
+    print(f'[DEBUG] init_vector_store called: embeddings={bool(embeddings)}, llm={bool(llm)}')
     if not embeddings or not llm:
+        print('[ERROR] Cannot initialize vector store: OpenAI not ready')
         return
     try:
+        print(f'[DEBUG] Attempting to load vector store from {VECTOR_DIR}')
         vs = FAISS.load_local(VECTOR_DIR, embeddings, allow_dangerous_deserialization=True)
         print('[OK] Loaded existing vector store')
-    except Exception:
+    except Exception as e:
+        print(f'[DEBUG] Creating new vector store: {type(e).__name__}: {e}')
         documents = load_documents()
+        print(f'[DEBUG] Loaded {len(documents)} document(s)')
         if not documents:
-            print('[WARN] No documents found — chatbot disabled')
+            print('[ERROR] No documents found — chatbot disabled')
             return
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         chunks = splitter.split_documents(documents)
+        print(f'[DEBUG] Split into {len(chunks)} chunks')
         vs = FAISS.from_documents(chunks, embeddings)
         vs.save_local(VECTOR_DIR)
         print(f'[OK] Created vector store from {len(documents)} document(s)')
@@ -452,10 +462,12 @@ def init_app():
     with app.app_context():
         init_db(app)
         seed_default_users()
-    if os.getenv('OPENAI_API_KEY'):
+    api_key = os.getenv('OPENAI_API_KEY')
+    if api_key:
+        print(f'[DEBUG] OPENAI_API_KEY is set ({len(api_key)} chars)')
         init_vector_store()
     else:
-        print('[WARN] OPENAI_API_KEY not set — chatbot disabled')
+        print('[ERROR] OPENAI_API_KEY not set — chatbot disabled')
 
 
 if __name__ == '__main__':
