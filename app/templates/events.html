@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Events â€” Cure My Nation{% endblock %}
+{% block title %}Events – Cure My Nation{% endblock %}
 {% block body %}
 <!-- Public nav (shown for guests) -->
 <nav id="public-nav" class="hidden bg-[#1E3A8A] text-white shadow-lg sticky top-0 z-50">
@@ -67,7 +67,7 @@ const token = localStorage.getItem('cmn_token');
 
 const eventsInnerHTML = `
   <div class="flex flex-wrap gap-3 mb-6">
-    <input id="search" oninput="applyFilter()" type="text" placeholder="Search eventsâ€¦" class="input-field flex-1 min-w-48" />
+    <input id="search" oninput="applyFilter()" type="text" placeholder="Search events…" class="input-field flex-1 min-w-48" />
     <select id="category" onchange="applyFilter()" class="input-field w-48">
       <option value="">All Categories</option>
       <option>Health Fair</option>
@@ -188,8 +188,8 @@ function viewEvent(id) {
     ${e.imageBase64 ? `<img src="${e.imageBase64}" alt="${App.esc(e.title)}" class="w-full h-48 object-cover rounded-xl" />` : ''}
     <div class="flex flex-wrap gap-2">${catBadge(e.category)}${isPast(e.eventDate)?'<span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Past Event</span>':''}</div>
     <dl class="space-y-2 text-sm">
-      <div class="flex gap-2"><dt class="font-semibold text-gray-700 w-24 shrink-0">Date</dt><dd class="text-gray-600">${fmtDate(e.eventDate)}${e.endDate?' â€“ '+fmtDate(e.endDate):''}</dd></div>
-      <div class="flex gap-2"><dt class="font-semibold text-gray-700 w-24 shrink-0">Time</dt><dd class="text-gray-600">${fmtTime(e.eventDate)||'â€”'}</dd></div>
+      <div class="flex gap-2"><dt class="font-semibold text-gray-700 w-24 shrink-0">Date</dt><dd class="text-gray-600">${fmtDate(e.eventDate)}${e.endDate?' – '+fmtDate(e.endDate):''}</dd></div>
+      <div class="flex gap-2"><dt class="font-semibold text-gray-700 w-24 shrink-0">Time</dt><dd class="text-gray-600">${fmtTime(e.eventDate)||'–'}</dd></div>
       ${e.location?`<div class="flex gap-2"><dt class="font-semibold text-gray-700 w-24 shrink-0">Location</dt><dd class="text-gray-600">${App.esc(e.location)}</dd></div>`:''}
       ${e.organizer?`<div class="flex gap-2"><dt class="font-semibold text-gray-700 w-24 shrink-0">Organizer</dt><dd class="text-gray-600">${App.esc(e.organizer)}</dd></div>`:''}
     </dl>

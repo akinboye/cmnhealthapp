@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Blog â€” Cure My Nation{% endblock %}
+{% block title %}Blog – Cure My Nation{% endblock %}
 {% block body %}
 <!-- Public nav (shown for guests, hidden for logged-in users) -->
 <nav id="public-nav" class="hidden bg-[#1E3A8A] text-white shadow-lg sticky top-0 z-50">
@@ -57,7 +57,7 @@ const token = localStorage.getItem('cmn_token');
 // â”€â”€ Build the inner blog HTML â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const blogInnerHTML = `
   <div class="flex flex-wrap gap-3 mb-6">
-    <input id="search" oninput="applyFilter()" type="text" placeholder="Search articlesâ€¦" class="input-field flex-1 min-w-48" />
+    <input id="search" oninput="applyFilter()" type="text" placeholder="Search articles…" class="input-field flex-1 min-w-48" />
     <select id="category" onchange="applyFilter()" class="input-field w-48">
       <option value="">All Categories</option>
       <option>Patient Rights</option>

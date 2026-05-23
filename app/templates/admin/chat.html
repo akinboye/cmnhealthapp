@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Live Chat â€” Admin{% endblock %}
+{% block title %}Live Chat – Admin{% endblock %}
 {% block body %}
 <div class="flex h-screen overflow-hidden">
   {% include 'partials/sidebar.html' %}
@@ -56,22 +56,22 @@
         <div id="conv-panel" class="hidden flex-1 flex-col overflow-hidden">
           <!-- Conv header -->
           <div class="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-            <!-- Back button â€” mobile only -->
+            <!-- Back button – mobile only -->
             <button onclick="goBackToSessions()" class="md:hidden flex items-center gap-1 text-[#1E3A8A] font-semibold text-sm shrink-0">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
               Back
             </button>
             <div class="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs shrink-0" id="conv-avatar">?</div>
             <div class="flex-1 min-w-0">
-              <p class="font-semibold text-gray-900 text-sm truncate" id="conv-name">â€”</p>
-              <p class="text-xs text-gray-500 truncate" id="conv-email">â€”</p>
+              <p class="font-semibold text-gray-900 text-sm truncate" id="conv-name">–</p>
+              <p class="text-xs text-gray-500 truncate" id="conv-email">–</p>
             </div>
           </div>
           <!-- Messages -->
           <div id="conv-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-2"></div>
           <!-- Reply input -->
           <div class="bg-white border-t border-gray-200 px-3 py-3 flex gap-2">
-            <input id="reply-input" type="text" placeholder="Type a replyâ€¦" maxlength="2000"
+            <input id="reply-input" type="text" placeholder="Type a reply…" maxlength="2000"
               class="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]"
               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply();}" />
             <button onclick="sendReply()"

@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Cure My Nation â€” Patient Rights & Health{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Cure My Nation – Patient Rights & Health{% endblock %}
 
 {% block body %}
 <!-- Public nav -->
@@ -43,7 +43,7 @@
       Your Health Rights<br /><span class="text-[#FFB300]">Matter</span>
     </h1>
     <p class="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-10">
-      Report healthcare violations, access your Patient Bill of Rights, and get AI-powered health guidance â€” all in one platform.
+      Report healthcare violations, access your Patient Bill of Rights, and get AI-powered health guidance – all in one platform.
     </p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
       <a href="{{ APP_BASE }}/register" class="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold py-3.5 px-8 rounded-xl text-lg transition shadow-lg">
@@ -72,7 +72,7 @@
       <div class="text-sm text-gray-500 mt-1">Resolution Rate</div>
     </div>
     <div>
-      <div id="stat-users" class="text-3xl font-extrabold text-[#F97316]">â€¦</div>
+      <div id="stat-users" class="text-3xl font-extrabold text-[#F97316]">…</div>
       <div class="text-sm text-gray-500 mt-1">Registered Users</div>
     </div>
   </div>
@@ -128,22 +128,22 @@
       <button onclick="setPBORLang('yo')" data-lang="yo" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Yoruba</button>
       <button onclick="setPBORLang('ha')" data-lang="ha" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Hausa</button>
       <button onclick="setPBORLang('ig')" data-lang="ig" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Igbo</button>
-      <button onclick="setPBORLang('fr')" data-lang="fr" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">FranÃ§ais</button>
-      <button onclick="setPBORLang('es')" data-lang="es" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">EspaÃ±ol</button>
+      <button onclick="setPBORLang('fr')" data-lang="fr" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Français</button>
+      <button onclick="setPBORLang('es')" data-lang="es" class="pbor-lang-btn px-4 py-1.5 rounded-full text-sm font-semibold border transition">Español</button>
     </div>
 
     <!-- Translation notice -->
     <div id="pbor-translating" class="hidden text-center py-4 mb-4">
       <div class="inline-flex items-center gap-2 text-sm text-[#1E3A8A] bg-blue-50 px-4 py-2 rounded-full">
         <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-        Translatingâ€¦
+        Translating…
       </div>
     </div>
 
     <!-- Rights Grid -->
     <div id="pbor-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
-    <p class="text-center text-xs text-gray-400 mt-8">Source: Cure My Nation Initiative â€” Patients' Bill of Rights (PBOR)</p>
+    <p class="text-center text-xs text-gray-400 mt-8">Source: Cure My Nation Initiative – Patients' Bill of Rights (PBOR)</p>
   </div>
 </section>
 
@@ -196,13 +196,13 @@ const RIGHTS = [
   { n:'1',  title:'Access to Records & Service Information',
     desc:'You have the right to obtain complete, accurate copies of your medical records and full information about the healthcare services available to you, including their scope and limitations.' },
   { n:'2',  title:'Information in a Language You Understand',
-    desc:'You have the right to receive all health information â€” diagnosis, treatment options, procedures, and outcomes â€” in a language and manner that you clearly understand, including use of interpreters.' },
+    desc:'You have the right to receive all health information – diagnosis, treatment options, procedures, and outcomes – in a language and manner that you clearly understand, including use of interpreters.' },
   { n:'3',  title:'Transparent Billing',
     desc:'You have the right to a clear, itemized breakdown of all healthcare costs before and after treatment, with no hidden or unauthorized charges, and full disclosure of billing policies.' },
   { n:'4',  title:'Privacy & Confidentiality',
     desc:'Your personal health information and medical records must be kept strictly confidential, stored securely, and only shared with your consent or when required by law.' },
   { n:'5',  title:'Clean, Safe & Secure Environment',
-    desc:'You have the right to receive care in a healthcare facility that is hygienic, hazard-free, and secure â€” with proper waste disposal, sterile equipment, and protection from harm or abuse.' },
+    desc:'You have the right to receive care in a healthcare facility that is hygienic, hazard-free, and secure – with proper waste disposal, sterile equipment, and protection from harm or abuse.' },
   { n:'6',  title:'Respectful Treatment',
     desc:'Every patient deserves dignified, courteous, and non-discriminatory care regardless of gender, religion, ethnicity, disability, economic status, or any other personal characteristic.' },
   { n:'7',  title:'Emergency Care',

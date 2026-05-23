@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Report Violation â€” Cure My Nation{% endblock %}
+{% block title %}Report Violation – Cure My Nation{% endblock %}
 {% block body %}
 <div class="flex h-screen overflow-hidden">
   {% include 'partials/sidebar.html' %}
@@ -25,7 +25,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5">Violation Type *</label>
               <select id="type" required class="input-field">
-                <option value="">Select a typeâ€¦</option>
+                <option value="">Select a type…</option>
                 <option value="Medical Malpractice">Medical Malpractice</option>
                 <option value="Denial of Treatment">Denial of Treatment</option>
                 <option value="Negligence">Negligence</option>
@@ -80,7 +80,7 @@
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5">Description *</label>
-              <textarea id="description" required rows="5" class="input-field resize-none" placeholder="Describe what happened in detail. Include names of staff, procedures, dates, and any other relevant informationâ€¦" maxlength="5000"></textarea>
+              <textarea id="description" required rows="5" class="input-field resize-none" placeholder="Describe what happened in detail. Include names of staff, procedures, dates, and any other relevant information…" maxlength="5000"></textarea>
               <div class="text-xs text-gray-400 mt-1">Minimum 20 characters</div>
             </div>
 
@@ -141,7 +141,7 @@ document.getElementById('violation-form').addEventListener('submit', async (e) =
 
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
-  document.getElementById('btn-text').textContent = 'Submittingâ€¦';
+  document.getElementById('btn-text').textContent = 'Submitting…';
   document.getElementById('btn-spinner').classList.remove('hidden');
 
   try {

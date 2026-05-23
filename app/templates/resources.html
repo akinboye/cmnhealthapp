@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Resources â€” Cure My Nation{% endblock %}
+{% block title %}Resources – Cure My Nation{% endblock %}
 {% block body %}
 <div class="flex h-screen overflow-hidden">
   {% include 'partials/sidebar.html' %}
@@ -12,7 +12,7 @@
     <main class="flex-1 p-6">
       <!-- Search + filter -->
       <div class="flex flex-wrap gap-3 mb-6">
-        <input id="search" oninput="applyFilter()" type="text" placeholder="Search articlesâ€¦" class="input-field flex-1 min-w-48" />
+        <input id="search" oninput="applyFilter()" type="text" placeholder="Search articles…" class="input-field flex-1 min-w-48" />
         <select id="category" onchange="applyFilter()" class="input-field w-48">
           <option value="">All Categories</option>
           <option>Patient Rights</option>
@@ -41,7 +41,7 @@
 
 {% block scripts %}
 <script>
-// Resources is public â€” no auth required, but show sidebar if logged in
+// Resources is public – no auth required, but show sidebar if logged in
 const token = localStorage.getItem('cmn_token');
 if (token) App.initSidebar('resources');
 
