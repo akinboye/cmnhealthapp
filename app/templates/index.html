@@ -173,6 +173,12 @@
 </footer>
 
 <script>
+  // Set APP_BASE early (before any fetch calls)
+  if (!window.APP_BASE) {
+    window.APP_BASE = "{{ APP_BASE }}";
+    console.log('[DEBUG] Set window.APP_BASE to:', window.APP_BASE);
+  }
+
   // Redirect already-logged-in users to dashboard
   const token = localStorage.getItem('cmn_token');
   if (token) { window.location.href = (window.APP_BASE || '') + '/dashboard'; }
