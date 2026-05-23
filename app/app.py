@@ -107,7 +107,9 @@ jwt = JWTManager(app)
 def inject_app_base():
     # request.script_root is set automatically by Passenger (SCRIPT_NAME)
     # or by ProxyFix (X-Forwarded-Prefix). Empty string on plain localhost.
-    return dict(APP_BASE=request.script_root)
+    app_base = request.script_root
+    print(f'[DEBUG] inject_app_base: script_root={app_base}, path={request.path}')
+    return dict(APP_BASE=app_base)
 
 # ─── Security headers ───────────────────────────────────────────────────────
 @app.after_request

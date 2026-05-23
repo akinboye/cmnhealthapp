@@ -104,7 +104,10 @@
 </div>
 
 <!-- Expose server subdirectory prefix to JavaScript -->
-<script>window.APP_BASE = "{{ APP_BASE }}";</script>
+<script>
+  window.APP_BASE = "{{ APP_BASE }}";
+  console.log('[DEBUG] window.APP_BASE from template:', window.APP_BASE);
+</script>
 <!-- Global JS utilities -->
 <script src="{{ APP_BASE }}/static/js/app.js"></script>
 {% block scripts %}{% endblock %}
