@@ -334,8 +334,10 @@ def public_stats():
     """Public stats for landing page (no auth required)"""
     try:
         count = User.query.count()
+        print(f'[DEBUG] User count query returned: {count}')
         return jsonify({'success': True, 'userCount': count}), 200
-    except Exception:
+    except Exception as e:
+        print(f'[ERROR] Stats query failed: {type(e).__name__}: {e}')
         return jsonify({'success': True, 'userCount': 0}), 200
 
 
