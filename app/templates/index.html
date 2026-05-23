@@ -178,13 +178,26 @@
   if (token) { window.location.href = (window.APP_BASE || '') + '/dashboard'; }
 
   // Load live user count
-  fetch((window.APP_BASE || '') + '/api/auth/stats')
-    .then(r => r.json())
-    .then(d => {
-      const el = document.getElementById('stat-users');
-      if (el) el.textContent = (d.userCount || 0).toLocaleString();
+  const statsUrl = (window.APP_BASE || '') + '/api/auth/stats';
+  console.log('[DEBUG] Fetching stats from:', statsUrl);
+  fetch(statsUrl)
+    .then(r => {
+      console.log('[DEBUG] Stats response status:', r.status);
+      return r.json();
     })
-    .catch(() => {
+    .then(d => {
+      console.log('[DEBUG] Stats data:', d);
+      const el = document.getElementById('stat-users');
+      if (el) {
+        const count = d.userCount || 0;
+        console.log('[DEBUG] Setting user count to:', count);
+        el.textContent = count.toLocaleString();
+      } else {
+        console.error('[ERROR] Element stat-users not found');
+      }
+    })
+    .catch(err => {
+      console.error('[ERROR] Stats fetch failed:', err);
       const el = document.getElementById('stat-users');
       if (el) el.textContent = '0';
     });
