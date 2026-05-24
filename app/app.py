@@ -224,14 +224,14 @@ def init_vector_store():
         if not documents:
             print('[ERROR] No documents found — chatbot disabled')
             return
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         chunks = splitter.split_documents(documents)
         print(f'[DEBUG] Split into {len(chunks)} chunks')
         vs = FAISS.from_documents(chunks, embeddings)
         vs.save_local(VECTOR_DIR)
         print(f'[OK] Created vector store from {len(documents)} document(s)')
-    qa_retriever = vs.as_retriever(search_kwargs={'k': 5})
-    print('[OK] Chatbot retriever ready')
+    qa_retriever = vs.as_retriever(search_kwargs={'k': 10})
+    print('[OK] Chatbot retriever ready (k=10)')
 
 
 # ─── Seed default users ─────────────────────────────────────────────────────
